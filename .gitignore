@@ -3,5 +3,4 @@ dist
 build/
 .venv/
 .DS_Store
-rom/
 __pycache__/

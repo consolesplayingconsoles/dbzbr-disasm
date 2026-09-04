@@ -14,7 +14,8 @@ python3 -m venv .venv && .venv/bin/pip install capstone
 ```
 
 Directories: `dist/` source ROMs and third-party patches, `build/` regenerable
-analysis, `rom/` ROMs built here. All three are untracked.
+analysis. Both untracked. This repo builds no ROMs; mods do that, into their own
+`rom/`.
 
 Outputs (all under `build/`, untracked):
 

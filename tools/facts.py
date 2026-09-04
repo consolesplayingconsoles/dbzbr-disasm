@@ -50,6 +50,7 @@ PORTRAIT_SITES = {                # read one at a time; proximity guessing lies
 }
 # Mirror-match paths that already force bank B, left alone: $0073A8, $034880,
 # $03BDD4. Three more loads of bank A are unclassified: $03390A, $043A28, $044044.
+FIGHTER_RELOAD  = 0x00D1D6        # reloads both fighters' palettes (d2 = which)
 PORTRAIT_RELOAD = 0x03BD42        # the game's own reload; ram_EA00 picks player.
 EA00 = 0xFFEA00                   # Only runs on selection change. Calling it off
                                   # the select screen repaints portraits wrongly.
