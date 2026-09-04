@@ -50,20 +50,77 @@ PORTRAIT_SITES = {                # read one at a time; proximity guessing lies
 }
 # Mirror-match paths that already force bank B, left alone: $0073A8, $034880,
 # $03BDD4. Three more loads of bank A are unclassified: $03390A, $043A28, $044044.
+FIGHTER_RELOAD  = 0x00D1D6        # reloads both fighters' palettes (d2 = which)
 PORTRAIT_RELOAD = 0x03BD42        # the game's own reload; ram_EA00 picks player.
 EA00 = 0xFFEA00                   # Only runs on selection change. Calling it off
                                   # the select screen repaints portraits wrongly.
 
-# ---- fighter colours, per palette index ----------------------------------
-# 4,5,6 are the gi (top and pants share one ramp); 8,9,11 the undershirt, belt
-# and wristbands; 1,2,3 skin; 15 the white sash.
-GI_RAMP, TRIM_RAMP, SKIN_RAMP, SASH = (4, 5, 6), (8, 9, 11), (1, 2, 3), 15
+# ---- what each palette index paints --------------------------------------
+# Established on hardware, not guessed: a probe ROM rendered the fighter as a
+# black silhouette with one group of indices lit white, cycling on a button, and
+# the shape said which part each group covered. Naming them means a recolour can
+# say "gi_mid" instead of "5", and be read by someone who has never opened the
+# disassembly.
+#
+# Measured for GOKU. Other fighters very likely share the layout, since they
+# share the mirror-match recolour, but none has been checked, so do not assume.
+GOKU = {
+    'gi_dark':      4,    # the gi. Top and pants share one ramp, so they cannot
+    'gi_mid':       5,    # be coloured separately without editing the art.
+    'gi_light':     6,
+    'trim_mid':     8,    # boots, belt, undershirt and bracelets together. Too
+    'trim_light':  11,    # light and the boots look wrong, too dark and the
+                          # shirt reads as black.
+    'skin_mid':     1,    # skin, and its highlight
+    'skin_light':  15,
+    'skin_shadow':  9,    # lights with skin and chest, NOT with the trim: it
+                          # looks blue in the stock palette but is not the shirt
+    'skin_hi_1':    2,
+    'skin_hi_2':    3,
+    'outline':     14,
+    'hair_1':      12,    # the Super Saiyan hair
+    'hair_2':      13,
+    'shade_1':      0,    # shading on arms and boots
+    'shade_2':      7,
+    'shade_3':     10,
+}
 
 # ---- roster --------------------------------------------------------------
 MOVES_PER_CHAR = 9        # 9 (move index, command index) pairs, 18 bytes each
-ROSTER_GRID_BOUNDS = [0x00D30A, 0x00D310]   # select-grid cursor wrap, both $0A
-ROSTER_RANDOM_BOUNDS = [0x078385, 0x078399] # random pick, both $0A
+# The immediate byte is the LAST byte of the instruction, not the address the
+# disassembly prints. Getting this wrong points the patch at the high half of an
+# immediate word, which reads $00 and silently does nothing.
+# The cursor on the character-select GRID (the screen that shows every name at
+# once) lives at $03BF98 and moves $58(a0) with four direction cases. Two of
+# them carry the roster size, and both must change together:
+#   right  $03BFAB  "== last index", $0A -> $0B
+#   down   $03C01F  "index + 3 must still be on the grid", $08 -> $09
+# Left stops at zero and up stops below the first row, so neither cares.
+# Found by widening the trace from the mode $24 step table: this routine sits in
+# code the vector-table trace never reaches, which is why reading alone missed
+# it through several rounds.
+SELECT_GRID_RIGHT = 0x03BFAB
+SELECT_GRID_DOWN  = 0x03C01F
+# The CPU/demo picker rolls a random number modulo the roster size:
+# `divu.w #$b,d0` at $03BF68, so the divisor byte is at $03BF6B.
+SELECT_CPU_MODULO = 0x03BF6B
+# The roster size is not one number. Known so far: the two grid bounds above,
+# this modulo, the two select-cursor bytes the roster kit patches, and the two
+# random-pick bytes. Assume there are more until a build proves otherwise.
+
+ROSTER_GRID_BOUNDS = [0x00D30B, 0x00D311]   # a DIFFERENT screen's cursor, $0A
+ROSTER_RANDOM_BOUNDS = [0x078387, 0x07839B] # random pick, both $0A
 ENABLE_TABLE = 0x080000   # longs per fighter; a zero entry means "skip this slot"
+
+# What a 12th fighter (index 11) finds already in place, and what it does not:
+#   enable table       entry 11 is non-zero, so the cursor would not skip it
+#   fighter palette    slot 11 exists at $0801C4, before bank B starts, and
+#                      already holds colours: something uses index 11 already
+#                      (see the `move.b #$b,ram_E7B6` at $04A47A)
+#   portrait slots     the byte table at $03C30E reads $FF at index 11: unset
+#   portrait art       the word table at $03A448 index 11 points at an odd
+#                      address, so it is not a real entry
+PORTRAIT_ART_TABLE = 0x03A448     # self-relative words, P1; P2's is at $03A4AA
 
 # Anchors are matched by masked byte signature, never by fixed address: the
 # Japanese ROM is the same engine at different addresses. '..' wildcards the

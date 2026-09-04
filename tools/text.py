@@ -32,7 +32,12 @@ FONT = build(
      (0x120, '0', 10)],                                      # digits
     {0x081: '', 0x08C: '',            # continuations of the wide m / w
      0x12A: ' ', 0x12C: '.', 0x0E4: '.', 0x16C: "'",
-     0x0A0: 'e', 0x0A6: 'i', 0x0AF: '!'})   # accented e / i, and !
+     0x0A0: 'e', 0x0A6: 'i', 0x0AF: '!',    # accented e / i, and !
+     # Identified from context rather than guessed: each of these sits inside
+     # real words often enough to be unambiguous.
+     0x16D: ',',      # 22x, "say, I don't like fighting"
+     0x12F: '-',      # 6x, "under-estimated", "warm-up", "ill-chosen"
+     0x10F: '\u00b0'})  # 3x, "I am N°1", and the roster's N°18
 
 # Names are stored uppercase; render them lowercase for readability with -l.
 def decode(word, lower=False):

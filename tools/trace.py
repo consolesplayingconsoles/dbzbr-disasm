@@ -111,7 +111,16 @@ def jump_table(base):
         a += 4
     return out
 
+# Extra entry points, passed as hex on the command line. Mode handlers and
+# their step tables are reached through word-offset tables the tracer resolves,
+# but a step table found by hand (or a routine spotted in a screenshot hunt)
+# can be seeded here so the next pass sees everything below it.
 seeds = {}
+for i, a in enumerate(sys.argv[3:]):
+    v = int(a, 16)
+    if v % 2 == 0 and 0x200 <= v < END:
+        seeds[v] = 'manual_%d' % i
+
 for i in range(1, 64):
     v = be32(i * 4) & 0xFFFFFF
     if 0x200 <= v < END and v % 2 == 0:
