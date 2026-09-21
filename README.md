@@ -161,3 +161,12 @@ bytes live at `$FFEA3C`, work RAM that is cleared at boot and that no
 instruction in the ROM names.
 
 C is confirm on that screen, so the toggle defaults to A.
+
+---
+
+## See it in action
+
+See what mods Pluto has helped me build from disassemblies like this one, with gameplay on real hardware:
+
+- 📸 **Instagram:** [@consolesplayingconsoles](https://www.instagram.com/consolesplayingconsoles/)
+- 🔗 **Everything else:** [beacons.ai/consolesplayingconsoles](https://beacons.ai/consolesplayingconsoles)
