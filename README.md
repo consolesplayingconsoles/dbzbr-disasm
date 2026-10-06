@@ -1,16 +1,31 @@
-# dbzbr-disasm
+# Dragon Ball Z: L'Appel du Destin disassembly
 
-Traced disassembly of *Dragon Ball Z: L'Appel du Destin* (Mega Drive, 2 MiB,
-SHA1 `5ff71986f4911b5dfd16598a5a3a9ba398c92c60`). ROMs live in `dist/` and are
-not committed: the Japanese original, the French release, and the English fan
-translation of the French release.
+A traced disassembly of the Mega Drive **Dragon Ball Z: L'Appel du Destin** (the French release of
+*Buyuu Retsuden*): a recursive-descent tracer, a labelled listing, a functional map of the ROM and a
+facts module that states every address and layout once.
 
-## Build
+**This repository contains no game code or data.** You supply your own ROM: every tool takes its
+path, and the trace and the listing are generated on your machine into `build/`, which git ignores.
+
+## Supported version
+
+| Release | Size | SHA-1 | Used for |
+|---|---|---|---|
+| L'Appel du Destin (France) | 2,097,152 | `5ff71986f4911b5dfd16598a5a3a9ba398c92c60` | the trace target: every address in `tools/facts.py` |
+| Buyuu Retsuden (Japan) | 2,097,152 | `dc6336dfbbe76c24ada735009d0d667ce27843f6` | diff partner, and the base of the third-party patches |
+| France + English fan translation | not recorded | `cf7be325e6387e7d27c853a018139db1833434d2` | diff partner: the text |
+
+Diffing the French ROM against the English patch gives 43 KiB across 40 tight
+regions, and that diff *is* the text map: far cheaper than searching for it. The Japanese ROM differs from the French one across ~500 KiB
+(`002296-07C623` plus `1A8EA4-1B7684`), so it is a layout change, not a simple
+language swap; do not assume JP offsets carry over.
+
+## Building
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install capstone
-.venv/bin/python tools/trace.py "dist/Dragon Ball Z - L'Appel du Destin (France).md" build/trace.json
-.venv/bin/python tools/emit.py  "dist/Dragon Ball Z - L'Appel du Destin (France).md" build/trace.json build/dbz.asm
+.venv/bin/python tools/trace.py <rom> build/trace.json
+.venv/bin/python tools/emit.py  <rom> build/trace.json build/dbz.asm
 ```
 
 Directories: `dist/` source ROMs and third-party patches, `build/` regenerable
@@ -25,7 +40,14 @@ Outputs (all under `build/`, untracked):
 | `dbz.asm` | labelled + symbolised listing, one line per instruction, xref comments |
 | `dbz-MAP.md` | mode table, offset tables, work-RAM variable index |
 
-## Tools
+## What is here
+
+| | |
+|---|---|
+| `tools/facts.py` | every address and layout, measured where measurement was needed, and the listing's names |
+| `REGIONS.md` | the functional map of the ROM, with a confidence marker per row (its ranges are `REGIONS` in `tools/facts.py`) |
+| `tools/` | the tracer and the analysis tools (below) |
+| `tools/progress.py` | the Progress block below |
 
 * `tools/trace.py`: recursive-descent 68000 tracer. Seeds from the vector table
   and follows every statically resolvable branch, plus two dispatch idioms this
@@ -36,7 +58,32 @@ Outputs (all under `build/`, untracked):
 * `tools/text.py`: decode on-screen text; `text.py <rom> <start> <end> [font]`.
 * `tools/mapdump.py`: coarse entropy/decodability map of the whole ROM.
 
-## Engine layout
+## Progress
+
+<!-- progress -->
+```
+CODE (French ROM, traced)            106254 bytes, 29628 instructions
+  traced code, of the ROM      5.1%  the rest is art and data
+  named subroutines            0.7%  8 of 1189
+  named RAM variables          1.3%  5 of 384 referenced
+  dispatch tables                 -  39 jump, 70 pointer, 39 mode
+  indirect calls unresolved       -  5
+ROM MAP (facts.REGIONS)              27 regions: 17 solid, 10 likely, 0 guess
+  mapped, bytes               27.6%  solid and likely ranges
+ART AND TEXT
+  Goku frames identified      39.2%  31 of 79
+  font glyphs decoded             -  74
+```
+<!-- /progress -->
+
+Updated on every commit by `tools/hooks/pre-commit` from `tools/progress.py` (enable once per
+clone: `git config core.hooksPath tools/hooks`; it needs a trace in `build/`).
+
+~106 KiB traced as code across 29.6k instructions and 4.2k labels, with 5
+register-indirect call sites still unresolved. The remaining ~1.9 MiB is asset
+payload (entropy 6.5 to 7.2, i.e. compressed or dense graphics), not code.
+
+## Engine
 
 * Reset `000206`, boot and checksum at `000300`, VDP init `000596`.
 * Main loop `000412`: `ram_E6A4` is the game mode; `jsr tbl_00045E(pc,d0.w)`
@@ -53,12 +100,6 @@ Outputs (all under `build/`, untracked):
 * Work RAM starts at `$FFFE00` (stack) with game state from `$FFE000` up;
   the listing names these `ram_XXXX`.
 
-## Coverage
-
-~106 KiB traced as code across 29.6k instructions and 4.2k labels, with 5
-register-indirect call sites still unresolved. The remaining ~1.9 MiB is asset
-payload (entropy 6.5 to 7.2, i.e. compressed or dense graphics), not code.
-
 ## Text
 
 Text is stored as raw VDP tilemap words, one word per glyph, `$FFFF` terminated.
@@ -71,7 +112,7 @@ name font runs `a..k` from `$0E5` and `l..z` from `$100`; the menu font runs
 most punctuation are still unmapped and print as `{XXX}`.
 
 ```
-$ .venv/bin/python tools/text.py "dist/...(France).md" 0x35326 0x35460 menu
+$ .venv/bin/python tools/text.py <rom> 0x35326 0x35460 menu
 035326  {0ED}l faut           t'entrainer       plus.
 035394  {0EE}e reste le       meilleur.
 ```
@@ -79,27 +120,22 @@ $ .venv/bin/python tools/text.py "dist/...(France).md" 0x35326 0x35460 menu
 Known text: the move-name table at `00A1E6`, and script/menu data around
 `035326`, `047xxx`, `04Bxxx` and `078xxx-07Cxxx`.
 
-## Using the three ROMs
-
-Diffing the French ROM against the English patch gives 43 KiB across 40 tight
-regions, and that diff *is* the text map: far cheaper than searching for it. The Japanese ROM differs from the French one across ~500 KiB
-(`002296-07C623` plus `1A8EA4-1B7684`), so it is a layout change, not a simple
-language swap; do not assume JP offsets carry over.
-
 ## Mods
 
 The mods moved to a separate repository, which uses this repo as a
 submodule. This repo describes the stock game; a mod says what it changes, and
 imports the addresses from `tools/facts.py` rather than restating them.
 
-## Roster mod kit (moved)
+The two mod kits below live there now; their sections stay here as the record of how they work.
+
+### Roster mod kit
 
 `tools/roster.py` makes the fighter roster data-driven. Dump it, edit the JSON,
 build a new ROM:
 
 ```bash
-.venv/bin/python tools/roster.py dump  "dist/<rom>" roster.json
-.venv/bin/python tools/roster.py build "dist/<rom>" roster.json out.md
+.venv/bin/python tools/roster.py dump  <rom> roster.json
+.venv/bin/python tools/roster.py build <rom> roster.json out.md
 ```
 
 A character is one JSON entry:
@@ -141,12 +177,12 @@ of emitting a broken ROM.
 **Untested in game.** The tables, the pointers and the checksum are verified by
 construction and by round trip, but no build has been run on hardware yet.
 
-## Colour-set picker
+### Colour-set picker
 
 `tools/colours.py` makes the second palette bank selectable:
 
 ```bash
-.venv/bin/python tools/colours.py "dist/<rom>" rom/out.md --button A
+.venv/bin/python tools/colours.py <rom> rom/out.md --button A
 ```
 
 Every fighter already has two colour sets: bank A at `$080064` and bank B at
@@ -162,8 +198,6 @@ instruction in the ROM names.
 
 C is confirm on that screen, so the toggle defaults to A.
 
----
-
 ## See it in action
 
 See what mods Pluto has helped me build from disassemblies like this one, with gameplay on real hardware:
@@ -171,7 +205,13 @@ See what mods Pluto has helped me build from disassemblies like this one, with g
 - 📸 **Instagram:** [@consolesplayingconsoles](https://www.instagram.com/consolesplayingconsoles/)
 - 🔗 **Everything else:** [beacons.ai/consolesplayingconsoles](https://beacons.ai/consolesplayingconsoles)
 
-## License
+## Third-party sources
+
+The English fan translation is used only to diff against the French ROM; it is not included.
+Dragon Ball Z and its publisher's trademarks belong to their owners. This project is not affiliated
+with or endorsed by them.
+
+## Licence
 
 © 2026 consolesplayingconsoles. Free software under the **GNU General Public License v3.0 or later** ([GPL-3.0-or-later](LICENSE)): use it, study it, share it, modify it. Derivative works stay under the same licence, so what gets built on this stays open too.
 

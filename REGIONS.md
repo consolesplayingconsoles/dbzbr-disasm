@@ -5,6 +5,9 @@ Functional map of the French/English ROM, built from the text sweep
 Confidence is marked: **solid** = read it and it says so, *likely* = strong
 structural evidence, ? = guess.
 
+The ranged rows are also in `REGIONS` in `tools/facts.py`, which the tools and
+`tools/progress.py` read: a range that changes here changes there too.
+
 ## Code
 
 | range | what | confidence |
@@ -24,8 +27,10 @@ structural evidence, ? = guess.
 | `00A0EA-00A0FF` | 11 words, one per character, pointing into the records below; several characters share a record | solid |
 | `00A100-00A14F` | per-character records of `(word, word)` pairs, five distinct records shared across the roster; move-slot or command layout | *likely* |
 | `00A9A2-00AA67` | **move-set table**, 18 bytes per fighter: 9 `(move index, command index)` pairs. Read at `0091EE`, stride computed as `18 * id` | solid |
+| `00AA68-00AA89` | command icon tiles: one tile word per icon, indexed by the icon code (a byte offset) | solid |
+| `00AA8A-00AB38` | **command icon table**: 25 commands x 7 icon codes, the input the move list screen draws for each command (`DrawMoveCommand` at `009998`; codes in `COMMAND_ICONS`, `tools/facts.py`) | solid |
 | `00A150-00A1E3` | **move-name pointer table**, 74 self-relative words | solid |
-| `00A1E4-00AB8E` | **move names**: TRIPLE BLAST, KAMEHAMEHA, MASENKO, BIG BANG, FINAL FLASH, DEATH BALL, GINYU SMASH … each preceded by a small word (cost or animation id?) | solid / ? |
+| `00A1E4-00A9A1` | **move names**: TRIPLE BLAST, KAMEHAMEHA, MASENKO, BIG BANG, FINAL FLASH, DEATH BALL, GINYU SMASH … each preceded by a small word (cost or animation id?); `$FFFF` at `00A9A0` ends the last | solid / ? |
 | `03A768-03A811` | second copy of the roster names, for another screen | solid |
 | `03A812-03A823` | stage-name pointer table, 9 self-relative words | solid |
 | `03A824-03A8A2` | **stage list**: SCENE, CLIFF, ROCKS, KAMI TOWER, HIGHWAY, SEA, NAMEK, NAMEK ?, BEACH | solid |

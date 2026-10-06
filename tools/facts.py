@@ -18,6 +18,11 @@ KNOWN = {
     '5ff71986f4911b5dfd16598a5a3a9ba398c92c60': "L'Appel du Destin (France)",
     'cf7be325e6387e7d27c853a018139db1833434d2': "L'Appel du Destin (F) + English patch",
 }
+SIZES = {                 # measured (files at hand); the English build's is not recorded
+    'dc6336dfbbe76c24ada735009d0d667ce27843f6': 2097152,
+    '5ff71986f4911b5dfd16598a5a3a9ba398c92c60': 2097152,
+}
+ROM_SIZE = 2097152        # the French ROM, the trace target
 CHECKSUM = 0x18E          # boot sums $000200..end and hangs at $000506 on mismatch
 
 # ---- input ---------------------------------------------------------------
@@ -140,16 +145,75 @@ GOKU_FRAMES = 86
 # Special-move projectiles are not in the fighter frames: LoadSpecialArt loads
 # them on demand over the fight-start art at $9000 (tile $480) and $9800 ($4C0).
 # Entry 0 is the Kamehameha beam: $0219E8 (35 tiles) + $021B20 (38 tiles),
-# matched tile for tile against a screenshot of the beam.
-# Goku's poses, named by the operator and matched against two gameplay
-# recordings (a flight, and a Goku vs Vegeta fight), not read from the
-# animation scripts, which are not located yet.
+# matched tile for tile against a screenshot of the beam. Entry 9 (the same
+# stream as entry 8, $0234DE) holds Goku's energy blast: tiles 37-39 are the top
+# row of the fireball, drawn twice (the bottom y-flipped), tail behind; matched
+# tile for tile against a recording.
+# Goku's poses, named by the operator and matched against gameplay recordings
+# (a flight, a Goku vs Vegeta fight, and 30 minutes of story mode matched frame
+# by frame), not read from the animation scripts, which are not located yet.
+# The special moves' frames are in the order the recording plays them.
 GOKU_POSES = {
     0: 'stand', 5: 'fight stance', 7: 'crouch: take-off, landing', 8: 'rising',
-    11: 'jump, falling', 15: 'guard', 16: 'hover', 17: 'run back',
-    18: 'run, fly forward', 30: 'jab', 36: 'side kick',
-    46: 'air punch (down)', 48: 'air kick (down)',
+    10: 'jump knee lift: crouch', 11: 'jump, falling', 15: 'guard', 16: 'hover',
+    17: 'run back', 18: 'run, fly forward', 19: 'dash', 20: 'dash',
+    30: 'jab', 31: 'dash elbow', 32: 'dash elbow: lunge',
+    35: 'jump knee lift: knee (also the flurry kick, between 38 and 39)',
+    36: 'side kick', 38: 'flurry kick: kick', 39: 'flurry kick: chamber',
+    40: 'flurry kick: high kick', 46: 'air punch (down)', 48: 'air kick (down)',
+    51: 'energy blast: wind-up', 52: 'energy blast: palm out (held while it flies)',
+    63: 'hit: lifted', 64: 'hit: knocked back', 65: 'knocked down',
+    66: 'knocked down', 67: 'down', 76: 'Kamehameha: charge',
+    77: 'Kamehameha: fire',
 }
+
+# ---- move list screen -----------------------------------------------------
+# MOVESET (per fighter, 9 x (move index, command index)) gives each move a
+# command; CommandIconTable has 7 bytes per command: the icons the screen shows
+# for its input, left to right, 0 = blank. Each icon code is a byte offset into
+# CommandIconTiles (one tile word per icon). Read from DrawMoveCommand and checked
+# against Goku's published move list: every one of his 9 inputs matches.
+# Directions are drawn for a fighter facing right.
+COMMAND_ICONS = {
+    0x04: 'up-forward', 0x06: 'forward', 0x08: 'down-forward', 0x0A: 'down',
+    0x0C: 'down-back', 0x0E: 'back', 0x1E: 'punch', 0x20: 'kick',
+    # 0x16-0x1C: four icons used only by commands 13 and 20, not identified yet
+}
+
+# ---- region map (French ROM) ----------------------------------------------
+# (start, end inclusive, what, confidence). solid = read and confirmed; likely =
+# strong structural evidence; guess. REGIONS.md tells the story behind each row;
+# this list is what the tools and tools/progress.py read. Rows known only in
+# Japanese offsets below $07C624 are left out: they do not transfer.
+REGIONS = [
+    (0x000200, 0x000540, 'boot: region/TMSS check, checksum, RAM clear, VDP init', 'solid'),
+    (0x00A038, 0x00A04D, 'character-name pointer table, 11 self-relative words', 'solid'),
+    (0x00A04E, 0x00A0E9, 'roster names', 'solid'),
+    (0x00A0EA, 0x00A0FF, 'per-character record pointers, one word each', 'solid'),
+    (0x00A100, 0x00A14F, 'per-character records, (word, word) pairs', 'likely'),
+    (0x00A150, 0x00A1E3, 'move-name pointer table, 74 self-relative words', 'solid'),
+    (0x00A1E4, 0x00A9A1, 'move names, each after a small word (ki cost?)', 'solid'),
+    (0x00A9A2, 0x00AA67, 'Moveset: 9 (move, command) pairs per fighter', 'solid'),
+    (0x00AA68, 0x00AA89, 'CommandIconTiles', 'solid'),
+    (0x00AA8A, 0x00AB38, 'CommandIconTable: 25 commands x 7 icon codes', 'solid'),
+    (0x034286, 0x03455A, 'short fight quotes', 'solid'),
+    (0x035326, 0x038D26, 'script block 1: post-fight and progression lines', 'solid'),
+    (0x03A768, 0x03A811, 'roster names, second copy', 'solid'),
+    (0x03A812, 0x03A823, 'stage-name pointer table, 9 self-relative words', 'solid'),
+    (0x03A824, 0x03A8A2, 'stage list', 'solid'),
+    (0x03E55E, 0x03F3DC, 'VS screen tilemap', 'likely'),
+    (0x078ADA, 0x07C624, 'script block 2: pre-fight taunts and story lines', 'solid'),
+    (0x080064, 0x0801C3, 'fighter palettes, bank A, 32 bytes per fighter', 'solid'),
+    (0x0801E4, 0x080343, 'fighter palettes, bank B (mirror matches)', 'solid'),
+    (0x1038D3, 0x1769C9, 'sprite and animation art (a sprite patch rewrites it)', 'likely'),
+    (0x18D95A, 0x18F2C6, 'uncompressed nametables', 'likely'),
+    (0x1902C2, 0x19140E, 'uncompressed nametables', 'likely'),
+    (0x193A3E, 0x195B76, 'uncompressed nametables', 'likely'),
+    (0x199622, 0x199D9A, 'uncompressed nametables', 'likely'),
+    (0x19B71C, 0x19E0E0, 'uncompressed nametables', 'likely'),
+    (0x19E6E6, 0x1A6306, 'uncompressed nametables', 'likely'),
+    (0x1ADE1C, 0x1AF347, 'early-boot subsystem: the sound driver', 'likely'),
+]
 
 # ---- names ---------------------------------------------------------------
 # Labels for the listing (tools/emit.py uses these over sub_/off_/ram_ names).
@@ -163,6 +227,10 @@ NAMES = {
     0x006B24: 'LoadFightArt',         # $7A24, $7F48, $88A6 to VRAM $8000, $9000, $A260
     0x021978: 'LoadSpecialArt',       # d0 = special: its art pair to VRAM $9000, $9800
     0x0219A8: 'SpecialArtTable',      # 16 x (2 words, entry-relative; -1 = no second part)
+    0x009998: 'DrawMoveCommand',      # move list screen: the selected move's input icons
+    0x00A9A2: 'Moveset',              # MOVESET: 9 x (move, command) per fighter
+    0x00AA68: 'CommandIconTiles',     # tile word per icon code (code = byte offset)
+    0x00AA8A: 'CommandIconTable',     # 7 icon codes per command (COMMAND_ICONS)
     0x080000: 'FighterArtTable',
     0x080034: 'FighterOamTable',
     0xFFE762: 'P1_Frame', 0xFFE7B6: 'P1_Fighter',
