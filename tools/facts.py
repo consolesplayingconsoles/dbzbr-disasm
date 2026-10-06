@@ -122,6 +122,47 @@ ENABLE_TABLE = 0x080000   # longs per fighter; a zero entry means "skip this slo
 #                      address, so it is not a real entry
 PORTRAIT_ART_TABLE = 0x03A448     # self-relative words, P1; P2's is at $03A4AA
 
+# ---- fighter sprites -----------------------------------------------------
+# ENABLE_TABLE is also the fighter ART table: entry N -> that fighter's block of
+# frame pointers (longs), one LZSS stream per frame (LzssToRam's format). Entry
+# 11 ($0E6D66) points into fighter 5's art: it is not a real block.
+FIGHTER_ART_TABLE = ENABLE_TABLE
+FIGHTER_OAM_TABLE = 0x080034   # longs per fighter -> sprite-piece block, after
+                               # that fighter's art (fighter 10's is at $17542A)
+# OAM block: frame f's entry is blk + f*2, its data at entry + s16(entry), i.e.
+# relative to the ENTRY, not the block. Data = count word, then 6-byte pieces:
+# word (tile 0-10, xflip bit 11, yflip bit 12), X s8, Y s8 (origin at the feet),
+# a byte ($FF/$F0), size (w-1)<<2 | (h-1). Tiles in a piece are column-major; a
+# frame's piece tile counts sum to its decompressed art size.
+# A frame block does not end at its first bad entry: Goku's has 86 frames, with
+# empty 2-byte streams at 49, 50, 54-57 and 81.
+GOKU_FRAMES = 86
+# Goku's poses, named by the operator and matched against two gameplay
+# recordings (a flight, and a Goku vs Vegeta fight), not read from the
+# animation scripts, which are not located yet.
+GOKU_POSES = {
+    0: 'stand', 5: 'fight stance', 7: 'crouch: take-off, landing', 8: 'rising',
+    11: 'jump, falling', 15: 'guard', 16: 'hover', 17: 'run back',
+    18: 'run, fly forward', 30: 'jab', 36: 'side kick',
+    46: 'air punch (down)', 48: 'air kick (down)',
+}
+
+# ---- names ---------------------------------------------------------------
+# Labels for the listing (tools/emit.py uses these over sub_/off_/ram_ names).
+# Each is what the code was read to do; nothing here changes a byte.
+NAMES = {
+    0x0017AA: 'LzssToRam',            # a0 = stream, a1 = destination
+    0x0015D2: 'LzssToVram',           # a0 = stream, a1 = VRAM address; the same
+    0x0015F0: 'LzssToVram_Data',      #   LZSS, written through a $2000 ring buffer
+    0x00EA7C: 'LoadFighterFrames',    # both players: P1, then falls into P2
+    0x00EAAC: 'LoadFighterFrame',     # d4 = fighter, d1 = frame, a1 = buffer
+    0x006B24: 'LoadFightArt',         # $7A24, $7F48, $88A6 to VRAM $8000, $9000, $A260
+    0x080000: 'FighterArtTable',
+    0x080034: 'FighterOamTable',
+    0xFFE762: 'P1_Frame', 0xFFE7B6: 'P1_Fighter',
+    0xFFE88A: 'P2_Frame', 0xFFE8DE: 'P2_Fighter',
+}
+
 # Anchors are matched by masked byte signature, never by fixed address: the
 # Japanese ROM is the same engine at different addresses. '..' wildcards the
 # bytes that legitimately differ (a lea displacement, the roster bound, and the

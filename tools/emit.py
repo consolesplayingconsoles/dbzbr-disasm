@@ -3,6 +3,7 @@
 import sys, json, re, struct
 from collections import defaultdict
 from capstone import *
+from facts import NAMES          # what is known gets its name in the listing
 
 ROM = open(sys.argv[1], 'rb').read(); END = len(ROM)
 tr  = json.load(open(sys.argv[2]))
@@ -20,6 +21,7 @@ HW = {0xA10000: 'IO_VERSION', 0xA10002: 'IO_DATA1', 0xA10004: 'IO_DATA2', 0xA100
       0xC00000: 'VDP_DATA', 0xC00004: 'VDP_CTRL', 0xC00008: 'VDP_HV', 0xA00000: 'Z80_RAM'}
 
 def lname(a):
+    if a in NAMES: return NAMES[a]
     k = labels.get(a, 'loc')
     p = {'sub': 'sub', 'loc': 'loc', 'jt': 'jt', 'mode': 'mode', 'table': 'tbl',
          'ptrtable': 'ptr', 'bad': 'bad'}.get(k, 'vec' if k.startswith('vector') else 'loc')
@@ -27,6 +29,7 @@ def lname(a):
 
 def sym(a, short):
     if a in HW: return HW[a]
+    if a in NAMES: return NAMES[a]
     if a >= 0xFF0000 or short and a >= 0xFFFF00 - 0: pass
     if a >= 0xFF0000: return 'ram_%04X' % (a & 0xFFFF)
     if a in labels: return lname(a)
