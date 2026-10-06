@@ -137,6 +137,10 @@ FIGHTER_OAM_TABLE = 0x080034   # longs per fighter -> sprite-piece block, after
 # A frame block does not end at its first bad entry: Goku's has 86 frames, with
 # empty 2-byte streams at 49, 50, 54-57 and 81.
 GOKU_FRAMES = 86
+# Special-move projectiles are not in the fighter frames: LoadSpecialArt loads
+# them on demand over the fight-start art at $9000 (tile $480) and $9800 ($4C0).
+# Entry 0 is the Kamehameha beam: $0219E8 (35 tiles) + $021B20 (38 tiles),
+# matched tile for tile against a screenshot of the beam.
 # Goku's poses, named by the operator and matched against two gameplay
 # recordings (a flight, and a Goku vs Vegeta fight), not read from the
 # animation scripts, which are not located yet.
@@ -157,6 +161,8 @@ NAMES = {
     0x00EA7C: 'LoadFighterFrames',    # both players: P1, then falls into P2
     0x00EAAC: 'LoadFighterFrame',     # d4 = fighter, d1 = frame, a1 = buffer
     0x006B24: 'LoadFightArt',         # $7A24, $7F48, $88A6 to VRAM $8000, $9000, $A260
+    0x021978: 'LoadSpecialArt',       # d0 = special: its art pair to VRAM $9000, $9800
+    0x0219A8: 'SpecialArtTable',      # 16 x (2 words, entry-relative; -1 = no second part)
     0x080000: 'FighterArtTable',
     0x080034: 'FighterOamTable',
     0xFFE762: 'P1_Frame', 0xFFE7B6: 'P1_Fighter',
