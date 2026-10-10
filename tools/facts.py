@@ -33,6 +33,24 @@ BUTTON = {'B': 0x10, 'C': 0x20, 'A': 0x40}
 PAD_READ_TAIL = 0x003FE2  # `move.w $e6e2.w,$e668.w` at the end of sub_003FD4;
                           # replacing it is a size-neutral place to hook input
 
+# Motion input (read from the code, $006308 and $0063F0). Per fighter: a ring of
+# 16 (value, frames held) entries at $94, next free entry $B6, oldest $B7 (byte
+# offsets), neutral frame count $B8, remembered button $B5, the punch/kick
+# button bit numbers $BA/$BB, the command found $B9 ($FF = none). A value is
+# the held pad byte with left/right swapped when the fighter faces left, so
+# bit 2 = back and bit 3 = forward; a change of value is a new entry, neutral
+# is not one but 12 neutral frames empty the history, and a value held 30
+# frames drops everything older. On a press (or the release of the remembered
+# button) the commands are tried in order: steps newest first from the newest
+# entry, each matched entry held at most 12 frames, a non-matching entry held
+# under 4 frames skipped, otherwise the command fails; a step with bit 7 set
+# needs its entry held at least 30 frames (a charge). The history is emptied
+# after every press. The command number is the CommandIconTable index.
+INPUT_HISTORY = dict(ring=0x94, head=0xB6, tail=0xB7, idle=0xB8, edge=0xB5,
+                     command=0xB9, punch_bit=0xBA, kick_bit=0xBB, entries=16,
+                     quick=12, noise=4, idle_frames=12, hold=30)
+INPUT_COMMANDS = {'punch': 0x006534, 'kick': 0x0065A6, 'punch_alt': 0x0065FD}
+
 # ---- screens -------------------------------------------------------------
 MODE_VAR    = 0xFFE6A4    # game mode, dispatched through the bra.w table at $45E
 SELECT_MODE = 0x24        # MEASURED. Inferring this from the mode table's
@@ -196,6 +214,7 @@ REGIONS = [
     (0x00A9A2, 0x00AA67, 'Moveset: 9 (move, command) pairs per fighter', 'solid'),
     (0x00AA68, 0x00AA89, 'CommandIconTiles', 'solid'),
     (0x00AA8A, 0x00AB38, 'CommandIconTable: 25 commands x 7 icon codes', 'solid'),
+    (0x006534, 0x006615, 'command tables: punch, kick, punch alt (INPUT_COMMANDS)', 'solid'),
     (0x034286, 0x03455A, 'short fight quotes', 'solid'),
     (0x035326, 0x038D26, 'script block 1: post-fight and progression lines', 'solid'),
     (0x03A768, 0x03A811, 'roster names, second copy', 'solid'),
@@ -231,6 +250,15 @@ NAMES = {
     0x00A9A2: 'Moveset',              # MOVESET: 9 x (move, command) per fighter
     0x00AA68: 'CommandIconTiles',     # tile word per icon code (code = byte offset)
     0x00AA8A: 'CommandIconTable',     # 7 icon codes per command (COMMAND_ICONS)
+    0x0062FC: 'RecordInputs',         # both fighters: InputHistory for P1, then P2
+    0x006308: 'InputHistory',         # a0 = fighter: append/extend the d-pad history
+    0x0063B6: 'InputFacing',          # swap left/right when the fighter faces left
+    0x0063E4: 'MatchCommands',        # both fighters: MatchCommand for P1, then P2
+    0x0063F0: 'MatchCommand',         # a0 = fighter: button pressed/released -> $B9 = command
+    0x00650A: 'ButtonEdge',           # pressed byte, or the remembered button let go
+    0x006534: 'PunchCommands',        # INPUT_COMMANDS: steps newest first, 0, command
+    0x0065A6: 'KickCommands',
+    0x0065FD: 'PunchCommandsAlt',     # used instead of PunchCommands in a mode ($E73C)
     0x080000: 'FighterArtTable',
     0x080034: 'FighterOamTable',
     0xFFE762: 'P1_Frame', 0xFFE7B6: 'P1_Fighter',

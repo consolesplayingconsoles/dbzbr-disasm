@@ -78,6 +78,17 @@ the same CRAM lines the portraits use, and the portraits come out wrong.
 Verified on hardware with a probe ROM that flashed the screen while a candidate
 byte showed a button. Do not infer this layout, it cost several rounds.
 
+### Motion commands
+
+`InputHistory` (`$006308`) keeps each fighter's last 16 d-pad changes with how
+long each was held; `MatchCommand` (`$0063F0`) reads them when the punch or kick
+button is pressed, and again when it is let go. The command tables at
+`$006534` (punch), `$0065A6` (kick) and `$0065FD` (punch, another mode) list
+each command as: step count, steps newest first, 0, command number (the
+`CommandIconTable` index). Directions are relative to the fighter's facing
+(4 back, 8 forward, 1 up, 2 down; diagonals combine), and the longer commands
+come first. Timing rules and field offsets: `INPUT_HISTORY` in `tools/facts.py`.
+
 ## Script
 
 Dialogue records are fixed width (`$6E` bytes, three pre-padded lines), so a
