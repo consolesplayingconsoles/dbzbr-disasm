@@ -2914,7 +2914,7 @@
 "start": 29364,
 "end": 29703,
 "kind": "code",
-"name": "sub_0072B4",
+"name": "VsScreenSetup",
 "symbolic": false,
 "labels": 8,
 "named_labels": 0,
@@ -11361,7 +11361,7 @@
 "start": 175970,
 "end": 176879,
 "kind": "code",
-"name": "sub_02AF62",
+"name": "ContinueSetup",
 "symbolic": false,
 "labels": 11,
 "named_labels": 0,
@@ -11636,8 +11636,8 @@
 "start": 183434,
 "end": 210673,
 "kind": "data",
-"name": "off_02CC8A",
-"format": "raw"
+"name": "continue_art",
+"format": "lzss"
 },
 {
 "start": 210674,
@@ -13847,9 +13847,121 @@
 },
 {
 "start": 260122,
+"end": 260143,
+"kind": "data",
+"name": "VsPortraitTable",
+"format": "raw"
+},
+{
+"start": 260144,
+"end": 261890,
+"kind": "data",
+"name": "sangoku_portrait",
+"format": "lzss"
+},
+{
+"start": 261891,
+"end": 261891,
+"kind": "data",
+"name": "data_03FF03",
+"format": "raw"
+},
+{
+"start": 261892,
+"end": 263481,
+"kind": "data",
+"name": "sangohan_portrait",
+"format": "lzss"
+},
+{
+"start": 263482,
+"end": 265065,
+"kind": "data",
+"name": "piccolo_portrait",
+"format": "lzss"
+},
+{
+"start": 265066,
+"end": 266815,
+"kind": "data",
+"name": "vegeta_portrait",
+"format": "lzss"
+},
+{
+"start": 266816,
+"end": 268353,
+"kind": "data",
+"name": "trunks_portrait",
+"format": "lzss"
+},
+{
+"start": 268354,
+"end": 269788,
+"kind": "data",
+"name": "cell_portrait",
+"format": "lzss"
+},
+{
+"start": 269789,
+"end": 269789,
+"kind": "data",
+"name": "data_041DDD",
+"format": "raw"
+},
+{
+"start": 269790,
+"end": 270982,
+"kind": "data",
+"name": "c18_portrait",
+"format": "lzss"
+},
+{
+"start": 270983,
+"end": 270983,
+"kind": "data",
+"name": "data_042287",
+"format": "raw"
+},
+{
+"start": 270984,
+"end": 272032,
+"kind": "data",
+"name": "kurilin_portrait",
+"format": "lzss"
+},
+{
+"start": 272033,
+"end": 272033,
+"kind": "data",
+"name": "data_0426A1",
+"format": "raw"
+},
+{
+"start": 272034,
+"end": 273113,
+"kind": "data",
+"name": "freezer_portrait",
+"format": "lzss"
+},
+{
+"start": 273114,
+"end": 274543,
+"kind": "data",
+"name": "likum_portrait",
+"format": "lzss"
+},
+{
+"start": 274544,
+"end": 275844,
+"kind": "data",
+"name": "giniou_portrait",
+"format": "lzss"
+},
+{
+"start": 275845,
 "end": 275845,
 "kind": "data",
-"name": "off_03F81A",
+"name": "data_043585",
 "format": "raw"
 },
 {

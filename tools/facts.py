@@ -269,6 +269,9 @@ NAMES = {
     0x006534: 'PunchCommands',        # INPUT_COMMANDS: steps newest first, 0, command
     0x0065A6: 'KickCommands',
     0x0065FD: 'PunchCommandsAlt',     # used instead of PunchCommands in a mode ($E73C)
+    0x02AF62: 'ContinueSetup',         # loads continue_art, draws CONTINUE / FOIS and the count
+    0x0072B4: 'VsScreenSetup',         # both fighters' portraits to VRAM $6000/$7000, their palettes
+    0x03F81A: 'VsPortraitTable',       # self-relative word per fighter -> its portrait (LZSS, 80 tiles)
     0x077AF6: 'TitleMode',             # game mode $38: the title screen, its steps at $077B1E
     0x080000: 'FighterArtTable',
     0x080034: 'FighterOamTable',
@@ -491,6 +494,28 @@ BLOCKS += [
     (0x1769CA, 0x177572, 'title2_art', 'lzss'),
     (0x1ABB86, 0x1AC832, 'title2_art_b', 'lzss'),
     (0x1AD460, 0x1ADBD7, 'title2_plane_a', 'lzss'),
+]
+# The continue screen (main mode table slot $4B2 -> $02AF02; its setup at $02AF62 loads this art to
+# VRAM 0 and draws "CONTINUE" and "FOIS" and the digits from it: rendered from the strings at
+# $02C90C). 1536 tiles.
+BLOCKS += [
+    (0x02CC8A, 0x0336F1, 'continue_art', 'lzss'),
+]
+# The fighters' portraits: VsPortraitTable ($03F81A) holds one self-relative word per fighter; the
+# VS screen ($0072B4) loads P1's to VRAM $6000 and P2's to $7000. Each decodes to 80 tiles (10x8);
+# they run back to back from the end of the table.
+BLOCKS += [
+    (0x03F830, 0x03FF02, 'sangoku_portrait', 'lzss'),
+    (0x03FF04, 0x040539, 'sangohan_portrait', 'lzss'),
+    (0x04053A, 0x040B69, 'piccolo_portrait', 'lzss'),
+    (0x040B6A, 0x04123F, 'vegeta_portrait', 'lzss'),
+    (0x041240, 0x041841, 'trunks_portrait', 'lzss'),
+    (0x041842, 0x041DDC, 'cell_portrait', 'lzss'),
+    (0x041DDE, 0x042286, 'c18_portrait', 'lzss'),
+    (0x042288, 0x0426A0, 'kurilin_portrait', 'lzss'),
+    (0x0426A2, 0x042AD9, 'freezer_portrait', 'lzss'),
+    (0x042ADA, 0x04306F, 'likum_portrait', 'lzss'),
+    (0x043070, 0x043584, 'giniou_portrait', 'lzss'),
 ]
 from picture_blocks_list import PICTURE_BLOCKS     # generated, each stream checked
 BLOCKS += PICTURE_BLOCKS
