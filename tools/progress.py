@@ -61,7 +61,7 @@ def pct(a, b):
 # rebuild as source ("source": true). Structured data (tables, mappings, frame layouts, scripts,
 # text) counts only as source.
 import re
-LEAF = {'tiles', 'compressed_tiles', 'rnc', 'lzss', 'lzss_frames', 'nemesis', 'kosinski', 'palette',
+LEAF = {'tiles', 'rle_tiles', 'compressed_tiles', 'rnc', 'lzss', 'lzss_frames', 'nemesis', 'kosinski', 'palette',
         'samples', 'pcm', 'fill'}
 
 
