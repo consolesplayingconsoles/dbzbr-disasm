@@ -62,6 +62,9 @@ Outputs (all under `build/`, untracked):
 
 <!-- progress -->
 ```
+SOURCE (French ROM)                    no rebuild recorded yet (traces/rebuild.json)
+  done: equivalent source        0.0%  rebuilds byte-identical; named code with symbolic operands, named data in a decoded format
+  rebuilds byte-identical           -  not recorded yet
 ROM MAP (facts.REGIONS)                28 regions: 18 high, 10 medium, 0 low confidence
   mapped, bytes                 27.7%  high and medium confidence ranges
 GAME CODE (French ROM, traced)         1189 subroutines, 106254 bytes of code

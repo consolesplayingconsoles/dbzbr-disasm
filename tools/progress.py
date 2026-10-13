@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""progress.py: the disassembly's state, in several measures. Run from the repo root
+"""progress.py: the disassembly's state, in several measures, the main one first. Run from the repo root
 after tracing (build/trace.json, see the README's Build section).
 
+  source       the main metric: bytes the source rebuilds identically as named, readable
+               code and data (the rebuild record, see source_rows)
   game code    subroutines named, unnamed and documented (named in a *.md), and RAM
                variables named (tools/facts.py NAMES); code the tracer reached, and the
                indirect calls it still can't follow
@@ -41,14 +43,50 @@ def pct(a, b):
     return '%5.1f%%' % (100.0 * a / b) if b else '-'
 
 
+# ── the main metric: equivalent source ──────────────────────────────────────────────────
+# The disassembly is done when its source rebuilds the ROM byte for byte and every byte of it
+# reads as source: code in named routines with symbolic operands (no raw ROM addresses, so the
+# source can be edited and still build), data in named blocks of a decoded format. The rebuild
+# tool records what it emitted in REBUILD (tracked: addresses, names and formats, no game bytes):
+#   {"identical": bool, "blocks": [{"start", "end" (inclusive), "kind": "code"|"data", "name",
+#    "symbolic": bool (code), "format": str (data; "raw" when not decoded)}]}
+# A byte counts only when the whole rebuild is identical and its block is named and readable.
+import re
+AUTO = re.compile(r'^(sub|loc|off|ram|unk|byte|word|dword|tbl|ptr|jt|mode|vec|bad|bin|data)_[0-9A-Fa-f]+$')
+
+
+def source_rows(path, rom_size, release):
+    try:
+        rb = json.load(open(path))
+    except (OSError, ValueError):
+        rb = None
+    if not rb:
+        return [('SOURCE (%s)' % release, '', 'no rebuild recorded yet (%s)' % path),
+                ('  done: equivalent source', pct(0, rom_size), 'rebuilds byte-identical; named code with symbolic operands, named data in a decoded format'),
+                ('  rebuilds byte-identical', '-', 'not recorded yet')]
+    named = lambda b: bool(b.get('name')) and not AUTO.match(b['name'])
+    size = lambda b: b['end'] - b['start'] + 1
+    code = [b for b in rb['blocks'] if b['kind'] == 'code']
+    data = [b for b in rb['blocks'] if b['kind'] == 'data']
+    code_ok = sum(size(b) for b in code if named(b) and b.get('symbolic'))
+    data_ok = sum(size(b) for b in data if named(b) and b.get('format', 'raw') != 'raw')
+    done = code_ok + data_ok if rb.get('identical') else 0
+    code_b, data_b = sum(size(b) for b in code), sum(size(b) for b in data)
+    return [('SOURCE (%s)' % release, '', '%d blocks: %d code, %d data' % (len(rb['blocks']), len(code), len(data))),
+            ('  done: equivalent source', pct(done, rom_size), 'rebuilds byte-identical; named code with symbolic operands, named data in a decoded format'),
+            ('  rebuilds byte-identical', '-', 'yes' if rb.get('identical') else 'NO: nothing counts until it does'),
+            ('  code as source', pct(code_ok, code_b), '%d of %d code bytes: named routine, symbolic operands' % (code_ok, code_b)),
+            ('  data as source', pct(data_ok, data_b), '%d of %d data bytes: named block, decoded format' % (data_ok, data_b))]
+
+
 docs = ''.join(open(f, encoding='utf-8').read() for f in sorted(os.listdir('.')) if f.endswith('.md'))
 documented = sum(1 for a, n in facts.NAMES.items() if a in subs and n in docs)
 level = {'solid': 'high', 'likely': 'medium', 'guess': 'low'}
 
 # The shared layout (the Dreamcast decomps' too): the main metric first, the one that reads
-# 100% when the project is complete; for a disassembly that is the ROM mapped (every byte known
-# as code, art or data). Then the game code, and what this disassembly measures on its own.
-rows_out = [
+# 100% when the project is complete (equivalent source, above). Then the ROM map, the game
+# code, and what this disassembly measures on its own.
+rows_out = source_rows('traces/rebuild.json', ROM_SIZE, 'French ROM') + [
     ('ROM MAP (facts.REGIONS)', '', '%d regions: %d high, %d medium, %d low confidence'
      % (len(facts.REGIONS), conf['solid'], conf['likely'], conf['guess'])),
     ('  mapped, bytes', pct(mapped, ROM_SIZE), 'high and medium confidence ranges'),
