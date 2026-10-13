@@ -3091,232 +3091,232 @@
 "start": 32584,
 "end": 32767,
 "kind": "data",
-"name": "off_007F48",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32768,
 "end": 32769,
 "kind": "data",
-"name": "off_008000",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32770,
 "end": 32771,
 "kind": "data",
-"name": "off_008002",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32772,
 "end": 32772,
 "kind": "data",
-"name": "off_008004",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32773,
 "end": 32773,
 "kind": "data",
-"name": "off_008005",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32774,
 "end": 32775,
 "kind": "data",
-"name": "off_008006",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32776,
 "end": 32777,
 "kind": "data",
-"name": "off_008008",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32778,
 "end": 32779,
 "kind": "data",
-"name": "off_00800A",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32780,
 "end": 32781,
 "kind": "data",
-"name": "off_00800C",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32782,
 "end": 32783,
 "kind": "data",
-"name": "off_00800E",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32784,
 "end": 32785,
 "kind": "data",
-"name": "off_008010",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32786,
 "end": 32787,
 "kind": "data",
-"name": "off_008012",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32788,
 "end": 32789,
 "kind": "data",
-"name": "off_008014",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32790,
 "end": 32791,
 "kind": "data",
-"name": "off_008016",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32792,
 "end": 32793,
 "kind": "data",
-"name": "off_008018",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32794,
 "end": 32799,
 "kind": "data",
-"name": "off_00801A",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32800,
 "end": 32801,
 "kind": "data",
-"name": "off_008020",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32802,
 "end": 32807,
 "kind": "data",
-"name": "off_008022",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32808,
 "end": 32811,
 "kind": "data",
-"name": "off_008028",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32812,
 "end": 32813,
 "kind": "data",
-"name": "off_00802C",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32814,
 "end": 32815,
 "kind": "data",
-"name": "off_00802E",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32816,
 "end": 32817,
 "kind": "data",
-"name": "off_008030",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32818,
 "end": 32819,
 "kind": "data",
-"name": "off_008032",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32820,
 "end": 32835,
 "kind": "data",
-"name": "off_008034",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32836,
 "end": 32883,
 "kind": "data",
-"name": "off_008044",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32884,
 "end": 32917,
 "kind": "data",
-"name": "off_008074",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 32918,
 "end": 33071,
 "kind": "data",
-"name": "off_008096",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33072,
 "end": 33075,
 "kind": "data",
-"name": "off_008130",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33076,
 "end": 33076,
 "kind": "data",
-"name": "off_008134",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33077,
 "end": 33077,
 "kind": "data",
-"name": "off_008135",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33078,
 "end": 33078,
 "kind": "data",
-"name": "off_008136",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33079,
 "end": 33079,
 "kind": "data",
-"name": "off_008137",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 33080,
 "end": 34361,
 "kind": "data",
-"name": "off_008138",
-"format": "raw"
+"name": "fight_start_art",
+"format": "lzss"
 },
 {
 "start": 34362,
@@ -3336,22 +3336,22 @@
 "start": 34982,
 "end": 35107,
 "kind": "data",
-"name": "off_0088A6",
-"format": "raw"
+"name": "aura_art",
+"format": "lzss"
 },
 {
 "start": 35108,
 "end": 35459,
 "kind": "data",
-"name": "off_008924",
-"format": "raw"
+"name": "aura_art",
+"format": "lzss"
 },
 {
 "start": 35460,
 "end": 35633,
 "kind": "data",
-"name": "off_008A84",
-"format": "raw"
+"name": "aura_art",
+"format": "lzss"
 },
 {
 "start": 35634,
@@ -9532,9 +9532,163 @@
 },
 {
 "start": 137640,
-"end": 151927,
+"end": 137703,
 "kind": "data",
 "name": "SpecialArtTable",
+"format": "raw"
+},
+{
+"start": 137704,
+"end": 138014,
+"kind": "data",
+"name": "kamehameha_art_1",
+"format": "lzss"
+},
+{
+"start": 138015,
+"end": 138015,
+"kind": "data",
+"name": "data_021B1F",
+"format": "raw"
+},
+{
+"start": 138016,
+"end": 138381,
+"kind": "data",
+"name": "kamehameha_art_2",
+"format": "lzss"
+},
+{
+"start": 138382,
+"end": 139485,
+"kind": "data",
+"name": "special_01_art",
+"format": "lzss"
+},
+{
+"start": 139486,
+"end": 139886,
+"kind": "data",
+"name": "special_02_art",
+"format": "lzss"
+},
+{
+"start": 139887,
+"end": 139887,
+"kind": "data",
+"name": "data_02226F",
+"format": "raw"
+},
+{
+"start": 139888,
+"end": 140335,
+"kind": "data",
+"name": "special_03_art",
+"format": "lzss"
+},
+{
+"start": 140336,
+"end": 141297,
+"kind": "data",
+"name": "special_04_art",
+"format": "lzss"
+},
+{
+"start": 141298,
+"end": 142642,
+"kind": "data",
+"name": "special_05_art",
+"format": "lzss"
+},
+{
+"start": 142643,
+"end": 142643,
+"kind": "data",
+"name": "data_022D33",
+"format": "raw"
+},
+{
+"start": 142644,
+"end": 143369,
+"kind": "data",
+"name": "special_06_art",
+"format": "lzss"
+},
+{
+"start": 143370,
+"end": 144604,
+"kind": "data",
+"name": "special_07_art",
+"format": "lzss"
+},
+{
+"start": 144605,
+"end": 144605,
+"kind": "data",
+"name": "data_0234DD",
+"format": "raw"
+},
+{
+"start": 144606,
+"end": 146383,
+"kind": "data",
+"name": "special_08_art",
+"format": "lzss"
+},
+{
+"start": 146384,
+"end": 147194,
+"kind": "data",
+"name": "special_10_art",
+"format": "lzss"
+},
+{
+"start": 147195,
+"end": 147195,
+"kind": "data",
+"name": "data_023EFB",
+"format": "raw"
+},
+{
+"start": 147196,
+"end": 148904,
+"kind": "data",
+"name": "special_11_art",
+"format": "lzss"
+},
+{
+"start": 148905,
+"end": 148905,
+"kind": "data",
+"name": "data_0245A9",
+"format": "raw"
+},
+{
+"start": 148906,
+"end": 150414,
+"kind": "data",
+"name": "special_12_art",
+"format": "lzss"
+},
+{
+"start": 150415,
+"end": 150415,
+"kind": "data",
+"name": "data_024B8F",
+"format": "raw"
+},
+{
+"start": 150416,
+"end": 151926,
+"kind": "data",
+"name": "special_14_art",
+"format": "lzss"
+},
+{
+"start": 151927,
+"end": 151927,
+"kind": "data",
+"name": "data_025177",
 "format": "raw"
 },
 {
@@ -15352,17 +15506,402 @@
 },
 {
 "start": 324114,
-"end": 398937,
+"end": 324497,
 "kind": "data",
 "name": "off_04F212",
 "format": "raw"
 },
 {
+"start": 324498,
+"end": 330463,
+"kind": "data",
+"name": "sangoku_picture1_art",
+"format": "lzss"
+},
+{
+"start": 330464,
+"end": 333597,
+"kind": "data",
+"name": "sangoku_picture0_art",
+"format": "lzss"
+},
+{
+"start": 333598,
+"end": 334231,
+"kind": "data",
+"name": "sangoku_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 334232,
+"end": 335062,
+"kind": "data",
+"name": "sangoku_picture1_plane_b",
+"format": "lzss"
+},
+{
+"start": 335063,
+"end": 335063,
+"kind": "data",
+"name": "data_051CD7",
+"format": "raw"
+},
+{
+"start": 335064,
+"end": 335759,
+"kind": "data",
+"name": "sangoku_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 335760,
+"end": 336109,
+"kind": "data",
+"name": "sangoku_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 336110,
+"end": 344296,
+"kind": "data",
+"name": "sangohan_picture0_art",
+"format": "lzss"
+},
+{
+"start": 344297,
+"end": 344297,
+"kind": "data",
+"name": "data_0540E9",
+"format": "raw"
+},
+{
+"start": 344298,
+"end": 345381,
+"kind": "data",
+"name": "sangohan_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 345382,
+"end": 345642,
+"kind": "data",
+"name": "sangohan_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 345643,
+"end": 345643,
+"kind": "data",
+"name": "data_05462B",
+"format": "raw"
+},
+{
+"start": 345644,
+"end": 354046,
+"kind": "data",
+"name": "piccolo_picture0_art",
+"format": "lzss"
+},
+{
+"start": 354047,
+"end": 354047,
+"kind": "data",
+"name": "data_0566FF",
+"format": "raw"
+},
+{
+"start": 354048,
+"end": 360320,
+"kind": "data",
+"name": "piccolo_picture1_art",
+"format": "lzss"
+},
+{
+"start": 360321,
+"end": 360321,
+"kind": "data",
+"name": "data_057F81",
+"format": "raw"
+},
+{
+"start": 360322,
+"end": 361518,
+"kind": "data",
+"name": "piccolo_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 361519,
+"end": 361519,
+"kind": "data",
+"name": "data_05842F",
+"format": "raw"
+},
+{
+"start": 361520,
+"end": 362573,
+"kind": "data",
+"name": "piccolo_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 362574,
+"end": 370487,
+"kind": "data",
+"name": "vegeta_picture0_art",
+"format": "lzss"
+},
+{
+"start": 370488,
+"end": 375907,
+"kind": "data",
+"name": "vegeta_picture1_art",
+"format": "lzss"
+},
+{
+"start": 375908,
+"end": 376538,
+"kind": "data",
+"name": "vegeta_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 376539,
+"end": 376539,
+"kind": "data",
+"name": "data_05BEDB",
+"format": "raw"
+},
+{
+"start": 376540,
+"end": 377357,
+"kind": "data",
+"name": "vegeta_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 377358,
+"end": 378314,
+"kind": "data",
+"name": "vegeta_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 378315,
+"end": 378315,
+"kind": "data",
+"name": "data_05C5CB",
+"format": "raw"
+},
+{
+"start": 378316,
+"end": 387166,
+"kind": "data",
+"name": "trunks_picture0_art",
+"format": "lzss"
+},
+{
+"start": 387167,
+"end": 387167,
+"kind": "data",
+"name": "data_05E85F",
+"format": "raw"
+},
+{
+"start": 387168,
+"end": 387964,
+"kind": "data",
+"name": "trunks_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 387965,
+"end": 387965,
+"kind": "data",
+"name": "data_05EB7D",
+"format": "raw"
+},
+{
+"start": 387966,
+"end": 388487,
+"kind": "data",
+"name": "trunks_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 388488,
+"end": 398937,
+"kind": "data",
+"name": "cell_picture0_art",
+"format": "lzss"
+},
+{
 "start": 398938,
-"end": 480007,
+"end": 402885,
 "kind": "data",
 "name": "off_06165A",
 "format": "raw"
+},
+{
+"start": 402886,
+"end": 403378,
+"kind": "data",
+"name": "cell_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 403379,
+"end": 403379,
+"kind": "data",
+"name": "data_0627B3",
+"format": "raw"
+},
+{
+"start": 403380,
+"end": 404733,
+"kind": "data",
+"name": "cell_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 404734,
+"end": 405377,
+"kind": "data",
+"name": "cell_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 405378,
+"end": 417051,
+"kind": "data",
+"name": "c18_picture0_art",
+"format": "lzss"
+},
+{
+"start": 417052,
+"end": 427214,
+"kind": "data",
+"name": "c18_picture1_art",
+"format": "lzss"
+},
+{
+"start": 427215,
+"end": 427215,
+"kind": "data",
+"name": "data_0684CF",
+"format": "raw"
+},
+{
+"start": 427216,
+"end": 428939,
+"kind": "data",
+"name": "c18_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 428940,
+"end": 430664,
+"kind": "data",
+"name": "c18_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 430665,
+"end": 430665,
+"kind": "data",
+"name": "data_069249",
+"format": "raw"
+},
+{
+"start": 430666,
+"end": 440919,
+"kind": "data",
+"name": "kurilin_picture0_art",
+"format": "lzss"
+},
+{
+"start": 440920,
+"end": 445813,
+"kind": "data",
+"name": "kurilin_picture1_art",
+"format": "lzss"
+},
+{
+"start": 445814,
+"end": 447177,
+"kind": "data",
+"name": "kurilin_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 447178,
+"end": 447948,
+"kind": "data",
+"name": "kurilin_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 447949,
+"end": 447949,
+"kind": "data",
+"name": "data_06D5CD",
+"format": "raw"
+},
+{
+"start": 447950,
+"end": 458960,
+"kind": "data",
+"name": "freezer_picture0_art",
+"format": "lzss"
+},
+{
+"start": 458961,
+"end": 458961,
+"kind": "data",
+"name": "data_0700D1",
+"format": "raw"
+},
+{
+"start": 458962,
+"end": 459861,
+"kind": "data",
+"name": "freezer_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 459862,
+"end": 460763,
+"kind": "data",
+"name": "freezer_picture0_plane_b",
+"format": "lzss"
+},
+{
+"start": 460764,
+"end": 471267,
+"kind": "data",
+"name": "freezer_picture1_art",
+"format": "lzss"
+},
+{
+"start": 471268,
+"end": 472173,
+"kind": "data",
+"name": "freezer_picture1_plane_a",
+"format": "lzss"
+},
+{
+"start": 472174,
+"end": 472989,
+"kind": "data",
+"name": "freezer_picture1_plane_b",
+"format": "lzss"
+},
+{
+"start": 472990,
+"end": 480007,
+"kind": "data",
+"name": "cell_picture1_art",
+"format": "lzss"
 },
 {
 "start": 480008,
@@ -15373,9 +15912,30 @@
 },
 {
 "start": 482770,
-"end": 487535,
+"end": 485827,
 "kind": "data",
 "name": "off_075DD2",
+"format": "raw"
+},
+{
+"start": 485828,
+"end": 487001,
+"kind": "data",
+"name": "cell_picture1_plane_b",
+"format": "lzss"
+},
+{
+"start": 487002,
+"end": 487534,
+"kind": "data",
+"name": "likum_picture0_plane_a",
+"format": "lzss"
+},
+{
+"start": 487535,
+"end": 487535,
+"kind": "data",
+"name": "data_07706F",
 "format": "raw"
 },
 {
@@ -15534,7 +16094,7 @@
 "start": 490230,
 "end": 490269,
 "kind": "code",
-"name": "sub_077AF6",
+"name": "TitleMode",
 "symbolic": false,
 "labels": 0,
 "named_labels": 0,
@@ -23489,9 +24049,16 @@
 },
 {
 "start": 1534410,
+"end": 1537394,
+"kind": "data",
+"name": "title2_art",
+"format": "lzss"
+},
+{
+"start": 1537395,
 "end": 1622375,
 "kind": "data",
-"name": "off_1769CA",
+"name": "data_177573",
 "format": "raw"
 },
 {
@@ -23517,45 +24084,73 @@
 },
 {
 "start": 1729286,
+"end": 1740448,
+"kind": "data",
+"name": "title_art",
+"format": "lzss"
+},
+{
+"start": 1740449,
 "end": 1740449,
 "kind": "data",
-"name": "off_1A6306",
+"name": "data_1A8EA1",
 "format": "raw"
 },
 {
 "start": 1740450,
+"end": 1751940,
+"kind": "data",
+"name": "title_shared_art",
+"format": "lzss"
+},
+{
+"start": 1751941,
 "end": 1751941,
 "kind": "data",
-"name": "off_1A8EA2",
+"name": "data_1ABB85",
 "format": "raw"
 },
 {
 "start": 1751942,
+"end": 1755186,
+"kind": "data",
+"name": "title2_art_b",
+"format": "lzss"
+},
+{
+"start": 1755187,
 "end": 1755187,
 "kind": "data",
-"name": "off_1ABB86",
+"name": "data_1AC833",
 "format": "raw"
 },
 {
 "start": 1755188,
+"end": 1757144,
+"kind": "data",
+"name": "title_plane_b",
+"format": "lzss"
+},
+{
+"start": 1757145,
 "end": 1757145,
 "kind": "data",
-"name": "off_1AC834",
+"name": "data_1ACFD9",
 "format": "raw"
 },
 {
 "start": 1757146,
 "end": 1758303,
 "kind": "data",
-"name": "off_1ACFDA",
-"format": "raw"
+"name": "title_plane_a",
+"format": "lzss"
 },
 {
 "start": 1758304,
 "end": 1760215,
 "kind": "data",
-"name": "off_1AD460",
-"format": "raw"
+"name": "title2_plane_a",
+"format": "lzss"
 },
 {
 "start": 1760216,

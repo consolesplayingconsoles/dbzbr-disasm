@@ -269,6 +269,7 @@ NAMES = {
     0x006534: 'PunchCommands',        # INPUT_COMMANDS: steps newest first, 0, command
     0x0065A6: 'KickCommands',
     0x0065FD: 'PunchCommandsAlt',     # used instead of PunchCommands in a mode ($E73C)
+    0x077AF6: 'TitleMode',             # game mode $38: the title screen, its steps at $077B1E
     0x080000: 'FighterArtTable',
     0x080034: 'FighterOamTable',
     0xFFE762: 'P1_Frame', 0xFFE7B6: 'P1_Fighter',
@@ -392,6 +393,14 @@ def fix_checksum(rom):
     struct.pack_into('>H', rom, CHECKSUM, total)
     return total
 
+# The fighters' full-screen pictures: one 28-byte record per fighter 1-10, read at $04EA14 with
+# P1_Fighter - 1 (fighter 0 takes the table at $04ED16 instead) and the picture index at $EA2E:
+# [art 0, art 1][plane A map 0, map 1][plane B map 0, map 1] longs, then [palette 0, 1] self-
+# relative words. Art is LZSS to VRAM tile 0; maps are LZSS to RAM, then copied into the
+# nametables at $C100 and $E100. tools/picture_blocks.py checks and lists the streams.
+PICTURE_TABLE = 0x04EBFE
+PICTURE_TABLE_0 = 0x04ED16       # fighter 0: two 14-byte records, picked by $FE03 / 2
+
 # ---- data blocks for the rebuild (tools/rebuild.py BLOCKS) ----------------------
 # (start, end inclusive, name, format): a block counts as source only when every byte of it is what
 # the format says, decoded by a tool here. Each range below was checked whole:
@@ -447,6 +456,44 @@ BLOCKS = [
     (0x1F69DF, 0x1F7FFF, 'pad_to_1F8000', 'fill'),
     (0x1FFD93, 0x1FFFFF, 'pad_to_200000', 'fill'),
 ]
+# Special-move art (SpecialArtTable, one entry per special index; entry 0 is the Kamehameha's two
+# parts) and LoadFightArt's fight-start art (VRAM $9000) and aura (VRAM $A260): every stream
+# decodes to whole tiles, the special ones back to back from $0219E8 to $025177.
+BLOCKS += [
+    (0x0219E8, 0x021B1E, 'kamehameha_art_1', 'lzss'),
+    (0x021B20, 0x021C8D, 'kamehameha_art_2', 'lzss'),
+    (0x021C8E, 0x0220DD, 'special_01_art', 'lzss'),
+    (0x0220DE, 0x02226E, 'special_02_art', 'lzss'),
+    (0x022270, 0x02242F, 'special_03_art', 'lzss'),
+    (0x022430, 0x0227F1, 'special_04_art', 'lzss'),
+    (0x0227F2, 0x022D32, 'special_05_art', 'lzss'),
+    (0x022D34, 0x023009, 'special_06_art', 'lzss'),
+    (0x02300A, 0x0234DC, 'special_07_art', 'lzss'),
+    (0x0234DE, 0x023BCF, 'special_08_art', 'lzss'),
+    (0x023BD0, 0x023EFA, 'special_10_art', 'lzss'),
+    (0x023EFC, 0x0245A8, 'special_11_art', 'lzss'),
+    (0x0245AA, 0x024B8E, 'special_12_art', 'lzss'),
+    (0x024B90, 0x025176, 'special_14_art', 'lzss'),
+    (0x007F48, 0x008639, 'fight_start_art', 'lzss'),
+    (0x0088A6, 0x008B31, 'aura_art', 'lzss'),
+]
+# The title screen, game mode $38 (main mode table slot $496 -> $077AF6, steps at $077B1E). Step 0
+# ($077B2C) loads art to VRAM 0 and $6000 and the plane B and plane A maps (Super Saiyan Goku's
+# face, the roster lined up: composed from these streams); step 2 ($077D4C) a second version, with
+# the same $6000 art, which lies where the French and Japanese releases differ. Every stream
+# decodes: art to whole tiles (a byte-mode stream writes one byte more: its count is size + 1),
+# maps to a 64x32 plane.
+BLOCKS += [
+    (0x1A6306, 0x1A8EA0, 'title_art', 'lzss'),
+    (0x1A8EA2, 0x1ABB84, 'title_shared_art', 'lzss'),
+    (0x1AC834, 0x1ACFD8, 'title_plane_b', 'lzss'),
+    (0x1ACFDA, 0x1AD45F, 'title_plane_a', 'lzss'),
+    (0x1769CA, 0x177572, 'title2_art', 'lzss'),
+    (0x1ABB86, 0x1AC832, 'title2_art_b', 'lzss'),
+    (0x1AD460, 0x1ADBD7, 'title2_plane_a', 'lzss'),
+]
+from picture_blocks_list import PICTURE_BLOCKS     # generated, each stream checked
+BLOCKS += PICTURE_BLOCKS
 
 # Ranges the trace took for code that are data (tools/rebuild.py NOT_CODE): routines where at least 3
 # and more than 30% of the "instructions" are encodings a 68000 does not have (68020 addressing modes, extension
