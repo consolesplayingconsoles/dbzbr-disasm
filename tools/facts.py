@@ -391,3 +391,96 @@ def fix_checksum(rom):
         total = (total + rd16(rom, a)) & 0xFFFF
     struct.pack_into('>H', rom, CHECKSUM, total)
     return total
+
+# ---- data blocks for the rebuild (tools/rebuild.py BLOCKS) ----------------------
+# (start, end inclusive, name, format): a block counts as source only when every byte of it is what
+# the format says, decoded by a tool here. Each range below was checked whole:
+#   fighter art: one LZSS stream per frame (tools/lzss.py), after the fighter's frame pointer table
+#   (FIGHTER_ART_TABLE entry; not a block: its longs are absolute addresses, source only once they
+#   are written as labels), back to back: every stream decodes and ends at the next one's start,
+#   or one zero byte before it (word alignment); empty frames are 2-byte streams. Vegeta's frame 97
+#   points at the $FF fill after his art, not at a stream: his art ends at $0B5101.
+#   sprite pieces: the fighter's OAM block (FIGHTER_OAM_TABLE entry): one self-relative word per
+#   frame, a $FFFF terminator, then each frame's count word and 6-byte pieces, back to back, every
+#   entry landing on one. Cell's is left out: his entries do not match his art's frame count.
+#   palettes: every word a Mega Drive colour ($0BGR, even components). Names and stage list: every
+#   word a glyph in text.FONT or $FFFF, the last one $FFFF. Pointer tables: every entry lands
+#   inside its strings.
+BLOCKS = [
+    (0x00A038, 0x00A04D, 'character_name_pointers', 'pointer_table'),
+    (0x00A04E, 0x00A0E9, 'roster_names', 'text'),
+    (0x03A768, 0x03A811, 'roster_names_copy', 'text'),
+    (0x03A812, 0x03A823, 'stage_name_pointers', 'pointer_table'),
+    (0x03A824, 0x03A8A3, 'stage_names', 'text'),
+    (0x080064, 0x0801C3, 'fighter_palettes_a', 'palette'),
+    (0x0801E4, 0x080343, 'fighter_palettes_b', 'palette'),
+    (0x0804BC, 0x09441E, 'sangoku_frame_art', 'lzss_frames'),
+    (0x095902, 0x0A1702, 'sangohan_frame_art', 'lzss_frames'),
+    (0x0A21F4, 0x0B5101, 'vegeta_frame_art', 'lzss_frames'),
+    (0x0B61E4, 0x0C7914, 'trunks_frame_art', 'lzss_frames'),
+    (0x0C8AA2, 0x0E4F3A, 'piccolo_frame_art', 'lzss_frames'),
+    (0x0E6D6A, 0x102096, 'cell_frame_art', 'lzss_frames'),
+    (0x103A40, 0x111512, 'c18_frame_art', 'lzss_frames'),
+    (0x112722, 0x120B5E, 'kurilin_frame_art', 'lzss_frames'),
+    (0x121D64, 0x13320C, 'freezer_frame_art', 'lzss_frames'),
+    (0x134728, 0x15786A, 'likum_frame_art', 'lzss_frames'),
+    (0x1594C8, 0x175419, 'giniou_frame_art', 'lzss_frames'),
+    (0x094434, 0x095775, 'sangoku_sprite_pieces', 'oam_frames'),
+    (0x0A1708, 0x0A2067, 'sangohan_sprite_pieces', 'oam_frames'),
+    (0x0B5120, 0x0B6047, 'vegeta_sprite_pieces', 'oam_frames'),
+    (0x0C7916, 0x0C890D, 'trunks_sprite_pieces', 'oam_frames'),
+    (0x0E4F72, 0x0E6BD7, 'piccolo_sprite_pieces', 'oam_frames'),
+    (0x11151A, 0x11258F, 'c18_sprite_pieces', 'oam_frames'),
+    (0x120B7A, 0x121BC5, 'kurilin_sprite_pieces', 'oam_frames'),
+    (0x13322C, 0x134599, 'freezer_sprite_pieces', 'oam_frames'),
+    (0x157874, 0x15935F, 'likum_sprite_pieces', 'oam_frames'),
+    (0x17542A, 0x1769B9, 'giniou_sprite_pieces', 'oam_frames'),
+    # alignment fill: $FF up to a 32 KiB boundary (or the ROM's end), what an `align` writes
+    (0x07C624, 0x07FFFF, 'pad_to_080000', 'fill'),
+    (0x1B7A0E, 0x1BFFFF, 'pad_to_1C0000', 'fill'),
+    (0x1C5159, 0x1C7FFF, 'pad_to_1C8000', 'fill'),
+    (0x1CFE73, 0x1CFFFF, 'pad_to_1D0000', 'fill'),
+    (0x1D7A28, 0x1D7FFF, 'pad_to_1D8000', 'fill'),
+    (0x1DF222, 0x1DFFFF, 'pad_to_1E0000', 'fill'),
+    (0x1E7EFA, 0x1E7FFF, 'pad_to_1E8000', 'fill'),
+    (0x1EFFE4, 0x1EFFFF, 'pad_to_1F0000', 'fill'),
+    (0x1F69DF, 0x1F7FFF, 'pad_to_1F8000', 'fill'),
+    (0x1FFD93, 0x1FFFFF, 'pad_to_200000', 'fill'),
+]
+
+# Ranges the trace took for code that are data (tools/rebuild.py NOT_CODE): routines where at least 3
+# and more than 30% of the "instructions" are encodings a 68000 does not have (68020 addressing modes, extension
+# words AS cannot reproduce), mostly zero words read as `ori.b #0`. Tables the tracer walked into.
+NOT_CODE = [
+    (0x080026, 0x080033),   # FighterArtTable's last entries and its $FFFFFFFF end, read as code
+    (0x00BB2C, 0x00BBC5),   # sub_00BB2C: 15 of 39 instructions not 68000 encodings
+    (0x00BBC6, 0x00C389),   # sub_00BBC6: 176 of 523 instructions not 68000 encodings
+    (0x00C38A, 0x00CA61),   # sub_00C38A: 200 of 479 instructions not 68000 encodings
+    (0x00CA62, 0x00CCBB),   # sub_00CA62: 66 of 156 instructions not 68000 encodings
+    (0x00D4F0, 0x00D513),   # sub_00D4F0: 9 of 9 instructions not 68000 encodings
+    (0x00ED72, 0x00ED91),   # sub_00ED72: 6 of 8 instructions not 68000 encodings
+    (0x01C396, 0x01C3B5),   # code_01C396: 3 of 8 instructions not 68000 encodings
+    (0x032DCC, 0x032E3B),   # sub_032DCC: 14 of 29 instructions not 68000 encodings
+    (0x03E2F2, 0x03E529),   # sub_03E2F2: 62 of 147 instructions not 68000 encodings
+    (0x04AE88, 0x04AE95),   # loc_04AE88: 3 of 3 instructions not 68000 encodings
+    (0x04DCCE, 0x04DCF7),   # sub_04DCCE: 7 of 10 instructions not 68000 encodings
+]
+
+# Tables of absolute longs into the ROM (tools/rebuild.py PTR_TABLES): written as labels, so they
+# follow what they point at. Each fighter's frame table runs from its FIGHTER_ART_TABLE entry to
+# its first LZSS stream.
+PTR_TABLES = [
+    (0x080000, 0x08002F, 'FighterArtTable'),       # 12 longs (entry 11 points into Cell's table), then $FFFFFFFF
+    (0x080034, 0x080063, 'FighterOamTable'),       # 12 longs (entry 11 points into Cell's sprite pieces)
+    (0x080364, 0x0804BB, 'sangoku_frame_art_table'),
+    (0x09578A, 0x095901, 'sangohan_frame_art_table'),
+    (0x0C890E, 0x0C8AA1, 'piccolo_frame_art_table'),
+    (0x0A206C, 0x0A21F3, 'vegeta_frame_art_table'),
+    (0x0B6064, 0x0B61E3, 'trunks_frame_art_table'),
+    (0x0E6C0E, 0x0E6D69, 'cell_frame_art_table'),
+    (0x1038CC, 0x103A3F, 'c18_frame_art_table'),
+    (0x112596, 0x112721, 'kurilin_frame_art_table'),
+    (0x121BE0, 0x121D63, 'freezer_frame_art_table'),
+    (0x1345B8, 0x134727, 'likum_frame_art_table'),
+    (0x159368, 0x1594C7, 'giniou_frame_art_table'),
+]

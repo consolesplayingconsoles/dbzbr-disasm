@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """progress.py: the disassembly's state, in several measures, the main one first. Run from the repo root
-after tracing (build/trace.json, see the README's Build section).
+after tracing (traces/trace.json).
 
   source       the main metric: bytes the source rebuilds identically as named, readable
                code and data (the rebuild record, see source_rows)
@@ -17,9 +17,9 @@ sys.path.insert(0, here)
 import facts, text
 
 ROM_SIZE = facts.ROM_SIZE
-if not os.path.exists('build/trace.json'):
-    sys.exit('progress.py: no build/trace.json (trace the ROM first)')
-t = json.load(open('build/trace.json'))
+if not os.path.exists('traces/trace.json'):
+    sys.exit('progress.py: no traces/trace.json (trace the ROM first)')
+t = json.load(open('traces/trace.json'))
 
 code = ROM_SIZE - sum(e - s for s, e in t['gaps'])
 kinds = {}
@@ -33,7 +33,13 @@ named_ram = sum(1 for a in facts.NAMES if (a | 0xFF0000) in ram)
 conf = {'solid': 0, 'likely': 0, 'guess': 0}
 for _, _, _, level in facts.REGIONS:
     conf[level] += 1
-mapped = sum(e - s + 1 for s, e, _, level in facts.REGIONS if level != 'guess')
+covered = set()
+for s, e, _, level in facts.REGIONS:
+    if level != 'guess':
+        covered.update(range(s, e + 1))
+for s, e, _, _ in getattr(facts, 'BLOCKS', []):    # checked whole: high confidence
+    covered.update(range(s, e + 1))
+mapped = len(covered)
 
 empty = 7                                    # Goku's empty frames: 49, 50, 54-57, 81 (facts.py)
 goku = facts.GOKU_FRAMES - empty
@@ -89,7 +95,7 @@ level = {'solid': 'high', 'likely': 'medium', 'guess': 'low'}
 rows_out = source_rows('traces/rebuild.json', ROM_SIZE, 'French ROM') + [
     ('ROM MAP (facts.REGIONS)', '', '%d regions: %d high, %d medium, %d low confidence'
      % (len(facts.REGIONS), conf['solid'], conf['likely'], conf['guess'])),
-    ('  mapped, bytes', pct(mapped, ROM_SIZE), 'high and medium confidence ranges'),
+    ('  mapped, bytes', pct(mapped, ROM_SIZE), 'high and medium confidence ranges, and the data blocks'),
     ('GAME CODE (French ROM, traced)', '', '%d subroutines, %d bytes of code' % (len(subs), code)),
     ('  named', pct(named_subs, len(subs)), '%d of %d subroutines (tools/facts.py NAMES)' % (named_subs, len(subs))),
     ('  unnamed', pct(len(subs) - named_subs, len(subs)), '%d subroutines (sub_...)' % (len(subs) - named_subs)),
