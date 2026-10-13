@@ -109,6 +109,11 @@ GOKU = {
 }
 
 # ---- roster --------------------------------------------------------------
+# Fighter index (the art, OAM and palette tables' entry) -> the name in the roster
+# list at $00A04E, in the same order. Checked by extracting each fighter's frames
+# (the Wait, this is not Namek mod builds its badniks from them).
+FIGHTERS = ['SANGOKU', 'SANGOHAN', 'PICCOLO', 'VEGETA', 'TRUNKS', 'CELL', 'N°18',
+            'KURILIN', 'FREEZER', 'LIKUM', 'GINIOU']
 MOVES_PER_CHAR = 9        # 9 (move index, command index) pairs, 18 bytes each
 # The immediate byte is the LAST byte of the instruction, not the address the
 # disassembly prints. Getting this wrong points the patch at the high half of an
@@ -167,17 +172,22 @@ GOKU_FRAMES = 86
 # stream as entry 8, $0234DE) holds Goku's energy blast: tiles 37-39 are the top
 # row of the fireball, drawn twice (the bottom y-flipped), tail behind; matched
 # tile for tile against a recording.
+# The power-up aura (the flame egg before a fight): its 45 tiles are part of the
+# fight art at $0088A6 (LoadFightArt, VRAM $A260 = tile $513), and its sprite frame,
+# 23 pieces mirrored left and right and filled with colour 15, is at $0070BC (again
+# at $021752). Extracted and used by the Wait, this is not Namek mod.
+AURA = dict(art=0x0088A6, vram_tile=0x513, tiles=45, frame=0x0070BC, frame_copy=0x021752)
 # Goku's poses, named by the operator and matched against gameplay recordings
 # (a flight, a Goku vs Vegeta fight, and 30 minutes of story mode matched frame
 # by frame), not read from the animation scripts, which are not located yet.
 # The special moves' frames are in the order the recording plays them.
 GOKU_POSES = {
     0: 'stand', 5: 'fight stance', 7: 'crouch: take-off, landing', 8: 'rising',
-    10: 'jump knee lift: crouch', 11: 'jump, falling', 15: 'guard', 16: 'hover',
+    9: 'jump knee lift: rising', 10: 'jump knee lift: crouch', 11: 'jump, falling', 15: 'guard', 16: 'hover',
     17: 'run back', 18: 'run, fly forward', 19: 'dash', 20: 'dash',
     30: 'jab', 31: 'dash elbow', 32: 'dash elbow: lunge',
     35: 'jump knee lift: knee (also the flurry kick, between 38 and 39)',
-    36: 'side kick', 38: 'flurry kick: kick', 39: 'flurry kick: chamber',
+    36: 'side kick', 37: 'flurry kick: low chamber', 38: 'flurry kick: kick', 39: 'flurry kick: chamber',
     40: 'flurry kick: high kick', 46: 'air punch (down)', 48: 'air kick (down)',
     51: 'energy blast: wind-up', 52: 'energy blast: palm out (held while it flies)',
     63: 'hit: lifted', 64: 'hit: knocked back', 65: 'knocked down',

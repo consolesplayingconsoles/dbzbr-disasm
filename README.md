@@ -62,17 +62,20 @@ Outputs (all under `build/`, untracked):
 
 <!-- progress -->
 ```
-CODE (French ROM, traced)            106254 bytes, 29628 instructions
-  traced code, of the ROM      5.1%  the rest is art and data
-  named subroutines            0.7%  8 of 1189
-  named RAM variables          1.3%  5 of 384 referenced
-  dispatch tables                 -  39 jump, 70 pointer, 39 mode
-  indirect calls unresolved       -  5
-ROM MAP (facts.REGIONS)              27 regions: 17 solid, 10 likely, 0 guess
-  mapped, bytes               27.6%  solid and likely ranges
+ROM MAP (facts.REGIONS)                28 regions: 18 high, 10 medium, 0 low confidence
+  mapped, bytes                 27.7%  high and medium confidence ranges
+GAME CODE (French ROM, traced)         1189 subroutines, 106254 bytes of code
+  named                          1.2%  14 of 1189 subroutines (tools/facts.py NAMES)
+  unnamed                       98.8%  1175 subroutines (sub_...)
+  documented                     0.3%  3 named subroutines in *.md
+  named globals                     -  5 of 384 RAM variables referenced
+  traced code, of the ROM        5.1%  the rest is art and data
+  dispatch tables                   -  39 jump, 70 pointer, 39 mode
+  indirect calls unresolved         -  5
 ART AND TEXT
-  Goku frames identified      39.2%  31 of 79
-  font glyphs decoded             -  74
+  Goku frames identified        41.8%  33 of 79
+  fighters identified          100.0%  11 of 11 (roster order)
+  font glyphs decoded               -  74
 ```
 <!-- /progress -->
 
