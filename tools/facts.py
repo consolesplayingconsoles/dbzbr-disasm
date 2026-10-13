@@ -517,6 +517,12 @@ BLOCKS += [
     (0x042ADA, 0x04306F, 'likum_portrait', 'lzss'),
     (0x043070, 0x043584, 'giniou_portrait', 'lzss'),
 ]
+# Named from their rendered tiles: a font (uppercase and lowercase alphabets; loaded at $039882)
+# and the DRAGON BALL Z logo with its Japanese logo (loaded at $03CE6C). Both decode to whole tiles.
+BLOCKS += [
+    (0x03A56B, 0x03A750, 'font_art', 'lzss'),
+    (0x03D9EE, 0x03E25E, 'logo_art', 'lzss'),
+]
 from picture_blocks_list import PICTURE_BLOCKS     # generated, each stream checked
 BLOCKS += PICTURE_BLOCKS
 

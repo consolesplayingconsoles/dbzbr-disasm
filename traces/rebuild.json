@@ -12968,9 +12968,16 @@
 },
 {
 "start": 238955,
+"end": 239440,
+"kind": "data",
+"name": "font_art",
+"format": "lzss"
+},
+{
+"start": 239441,
 "end": 239441,
 "kind": "data",
-"name": "off_03A56B",
+"name": "data_03A751",
 "format": "raw"
 },
 {
@@ -13791,9 +13798,16 @@
 },
 {
 "start": 252398,
+"end": 254558,
+"kind": "data",
+"name": "logo_art",
+"format": "lzss"
+},
+{
+"start": 254559,
 "end": 254559,
 "kind": "data",
-"name": "off_03D9EE",
+"name": "data_03E25F",
 "format": "raw"
 },
 {
