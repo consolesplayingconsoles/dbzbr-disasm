@@ -27,9 +27,18 @@ The facts module is where the work happens (the output is regenerated, never edi
             a table): the immediate becomes a label. An immediate in the ROM's range that is not
             listed here, nor a reference the trace recorded, leaves its routine not symbolic
   NOT_CODE  (start, end inclusive) ranges the trace took for code that are data: they become data
+  FIELDS    offset -> name: struct fields (`obVelX` = $10). A displacement off an address register
+            ($10(a0), $4(a2,d0.w)) prints as its field's name; one with no name leaves the routine
+            not symbolic, like a ROM address left as a number
+  FIELD_AT  instruction address -> (name, ...): the field names for that instruction's
+            displacements, in operand order, where FIELDS' name for that offset is the wrong struct
+  CONSTANTS addresses of instructions whose immediate falls in the ROM's range but is a number
+            (a count, a mask, a VDP command): it stays a number and the routine can still be
+            symbolic. An immediate moved to SR or CCR is always a number.
   PTR_TABLES  (start, end inclusive, name) tables of absolute longs pointing into the ROM: written
             as `dc.l <label>`, so they follow what they point at (the block's format is "pointers")
-The record (--record) holds addresses, names and formats only, no game bytes: track it. progress.py
+Each code block records its inner labels and struct displacements, and how many are named; a data block written as source
+(not a binary file) records "source": true. The record (--record) holds addresses, names and formats only, no game bytes: track it. progress.py
 reads it for the main metric.
 
 AS is Alfred Arnold's macro assembler (asl, p2bin): http://john.ccac.rwth-aachen.de:8000/as/
@@ -44,13 +53,15 @@ ap.add_argument('--as', dest='asdir', required=True)
 ap.add_argument('--facts'); ap.add_argument('--names', default='NAMES'); ap.add_argument('--blocks', default='BLOCKS')
 ap.add_argument('--pointers', default='POINTERS'); ap.add_argument('--not-code', dest='not_code', default='NOT_CODE')
 ap.add_argument('--ptr-tables', dest='ptr_tables', default='PTR_TABLES')
+ap.add_argument('--constants', default='CONSTANTS')
+ap.add_argument('--fields', default='FIELDS'); ap.add_argument('--field-at', dest='field_at', default='FIELD_AT')
 ap.add_argument('--record')
 a = ap.parse_args()
 
 ROM = open(a.rom, 'rb').read()
 SIZE = len(ROM)
 tr = json.load(open(a.trace))
-NAMES, BLOCKS, POINTERS, NOT_CODE, PTR_TABLES = {}, [], set(), [], []
+NAMES, BLOCKS, POINTERS, NOT_CODE, PTR_TABLES, CONSTANTS, FIELDS, FIELD_AT = {}, [], set(), [], [], set(), {}, {}
 if a.facts:
     sys.path.insert(0, os.path.dirname(os.path.abspath(a.facts)))
     spec = importlib.util.spec_from_file_location('facts', a.facts)
@@ -61,6 +72,9 @@ if a.facts:
     POINTERS = set(getattr(facts, a.pointers, ()))
     NOT_CODE = list(getattr(facts, a.not_code, []))
     PTR_TABLES = list(getattr(facts, a.ptr_tables, []))
+    CONSTANTS = set(getattr(facts, a.constants, ()))
+    FIELDS = dict(getattr(facts, a.fields, {}))
+    FIELD_AT = dict(getattr(facts, a.field_at, {}))
 for _ts, _te, _tn in PTR_TABLES:
     NAMES.setdefault(_ts, _tn)               # a pointer table is a label of its own
 # A block or a pointer table was checked whole as data: it wins over whatever the trace decoded there.
@@ -214,6 +228,9 @@ def ram_or_hw(full, size):
     return HW[base] + ('+%d' % (full - base) if full > base else '')
 
 
+DISP = re.compile(r'(?<![\w$])(-?)\$([0-9a-f]+)\((a[0-7]|sp)([,)])')
+
+
 def render(p, m, ops):
     """(text, symbolic): the instruction with its ROM, RAM and hardware operands as names where it
     can; symbolic only when every one of them is."""
@@ -222,6 +239,10 @@ def render(p, m, ops):
     def lab(v):
         if v in labelable:
             return name_of(v)
+        if v in inside:                      # a table base inside an instruction (an index that starts
+            for k in range(1, 9):            # above 0): the next label, minus the difference
+                if v + k in labelable:
+                    return '%s-%d' % (name_of(v + k), k)
         sym[0] = False
         return '$%X' % v
 
@@ -249,11 +270,25 @@ def render(p, m, ops):
         v = int(x.group(1), 16)
         if (v in drefs.get(p, ()) or p in POINTERS) and rom_target(v):
             return '#' + lab(v)
-        if 0x200 <= v < SIZE and m != 'moveq':
+        if 0x200 <= v < SIZE and m != 'moveq' and p not in CONSTANTS and not re.search(r',\s*(sr|ccr)$', ops):
             sym[0] = False                   # may be a ROM pointer nobody has labelled: not counted
         return x.group(0)
     o = IMM.sub(immr, o)
-    return ('\t%s\t%s' % (m, o)).rstrip(), sym[0]
+    fields, named_fields, at = [0], [0], list(FIELD_AT.get(p, ()))
+
+    def dispr(x):
+        v = int(x.group(2), 16) * (-1 if x.group(1) else 1)
+        fields[0] += 1
+        n = at.pop(0) if at else FIELDS.get(v)
+        zero = v == 0 and x.group(4) == ')'  # AS would shorten 0(a6) to (a6): (0.w,a6) keeps it
+        if n is None:
+            sym[0] = False                   # a struct offset nobody has named yet
+            return '(0.w,%s)' % x.group(3) if zero else x.group(0)
+        EQUS[n] = v
+        named_fields[0] += 1
+        return '(%s.w,%s)' % (n, x.group(3)) if zero else '%s(%s%s' % (n, x.group(3), x.group(4))
+    o = DISP.sub(dispr, o)
+    return ('\t%s\t%s' % (m, o)).rstrip(), sym[0], fields[0], named_fields[0]
 
 
 def dcw(p, n, why=''):
@@ -297,7 +332,7 @@ SLOT = 16
 while True:
     lines, line_of = HEAD.rstrip('\n').split('\n'), {}
     lines += ['%s equ $%X' % (name_of(t), t) for t in sorted(labelable)]
-    lines += ['%s equ $%X' % (n, v) for n, v in sorted(EQUS.items())]
+    lines += ['%s equ %s$%X' % (n, '-' if v < 0 else '', abs(v)) for n, v in sorted(EQUS.items())]
     live = [p for p in order if p not in fallback]
     for k, p in enumerate(live):
         lines += ['\torg $%X' % (k * SLOT), '\tphase $%X' % p, rendered[p][0], '\tdephase']
@@ -342,8 +377,11 @@ while p < SIZE:
             p += 1
         segments.append((s, p, 'data'))
 
-routine_starts = sorted(t for t in labelable if t in insns and (labels_kind.get(t) == 'sub' or t in NAMES))
-main = [HEAD] + ['%s equ $%X' % (n, v) for n, v in sorted(EQUS.items())] + ['\torg 0']
+# A routine starts where the trace found an entry (a call target, a dispatch target, a seed). A name
+# on any other code address names a label inside its routine; it never splits the routine.
+ENTRY = ('sub', 'mode', 'harvest', 'vector', 'manual')
+routine_starts = sorted(t for t in labelable if t in insns and str(labels_kind.get(t, '')).startswith(ENTRY))
+main = [HEAD] + ['%s equ %s$%X' % (n, '-' if v < 0 else '', abs(v)) for n, v in sorted(EQUS.items())] + ['\torg 0']
 blocks = []
 cur = None                                   # the routine being written: [start, name, lines, symbolic]
 
@@ -353,7 +391,8 @@ def flush():
     if cur:
         open(os.path.join(a.out, 'code', cur[1] + '.asm'), 'w').write('\n'.join(cur[2]) + '\n')
         main.append('\tinclude "code/%s.asm"' % cur[1])
-        blocks.append({'start': cur[0], 'end': cur[3] - 1, 'kind': 'code', 'name': cur[1], 'symbolic': cur[4]})
+        blocks.append({'start': cur[0], 'end': cur[3] - 1, 'kind': 'code', 'name': cur[1], 'symbolic': cur[4],
+                       'labels': cur[5], 'named_labels': cur[6], 'fields': cur[7], 'named_fields': cur[8]})
         cur = None
 
 
@@ -372,7 +411,7 @@ for s, e, kind in segments:
                 for t, tpt in sorted(inner.items()):
                     if s <= t < e:
                         main.append('%s equ %s+$%X' % (name_of(t), name_of(s), t - s))
-                blocks.append({'start': s, 'end': e - 1, 'kind': 'data', 'name': pt[2], 'format': 'pointers'})
+                blocks.append({'start': s, 'end': e - 1, 'kind': 'data', 'name': pt[2], 'format': 'pointers', 'source': True})
                 continue
         b = next((x for x in BLOCKS if x[0] <= s <= x[1]), None)   # a label inside a block splits it:
         nm = b[2] if b else (name_of(s) if s in labelable else 'data_%06X' % s)   # each piece keeps its name
@@ -389,18 +428,24 @@ for s, e, kind in segments:
         if cur is None or p in rs:
             flush()
             nm = name_of(p) if p in labelable else 'code_%06X' % p
-            cur = [p, nm, [], p, True]
+            cur = [p, nm, [], p, True, 0, 0, 0, 0]
         if p in labelable:
             cur[2].append('%s:' % name_of(p))
+            if p != cur[0]:                  # a label inside the routine: named, or still loc_
+                cur[5] += 1
+                cur[6] += p in NAMES
         n = insns[p][0]
         if p in fallback:
             m, ops = insns[p][1], insns[p][2]
             cur[2].append(dcw(p, n, '\t; %s %s (%s)' % (m or '?', ops or '', fallback[p])))
             cur[4] = False
+            m, ops = insns[p][1], insns[p][2]
         else:
-            text, sym = rendered[p]
+            text, sym, nf, nnf = rendered[p]
             cur[2].append(text)
             cur[4] = cur[4] and sym
+            cur[7] += nf
+            cur[8] += nnf
         p += n
         cur[3] = p
 flush()

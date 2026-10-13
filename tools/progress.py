@@ -56,9 +56,20 @@ def pct(a, b):
 # tool records what it emitted in REBUILD (tracked: addresses, names and formats, no game bytes):
 #   {"identical": bool, "blocks": [{"start", "end" (inclusive), "kind": "code"|"data", "name",
 #    "symbolic": bool (code), "format": str (data; "raw" when not decoded)}]}
-# A byte counts only when the whole rebuild is identical and its block is named and readable.
+# A byte counts only when the whole rebuild is identical and its block is named and readable: code
+# symbolic; data a leaf asset kept as a binary file in a decoded format (LEAF), or written by the
+# rebuild as source ("source": true). Structured data (tables, mappings, frame layouts, scripts,
+# text) counts only as source.
 import re
-AUTO = re.compile(r'^(sub|loc|off|ram|unk|byte|word|dword|tbl|ptr|jt|mode|vec|bad|bin|data)_[0-9A-Fa-f]+$')
+LEAF = {'tiles', 'compressed_tiles', 'rnc', 'lzss', 'lzss_frames', 'nemesis', 'kosinski', 'palette',
+        'samples', 'pcm', 'fill'}
+
+
+def readable(b):
+    return bool(b.get('source')) or b.get('format', 'raw') in LEAF
+
+
+AUTO = re.compile(r'^(sub|loc|off|ram|unk|byte|word|dword|tbl|ptr|jt|mode|vec|bad|bin|data|code)_[0-9A-Fa-f]+$')
 
 
 def source_rows(path, rom_size, release):
@@ -68,21 +79,29 @@ def source_rows(path, rom_size, release):
         rb = None
     if not rb:
         return [('SOURCE (%s)' % release, '', 'no rebuild recorded yet (%s)' % path),
-                ('  done: equivalent source', pct(0, rom_size), 'rebuilds byte-identical; named code with symbolic operands, named data in a decoded format'),
+                ('  done: equivalent source', pct(0, rom_size), 'rebuilds byte-identical; named code with every label and operand named; named leaf assets, structured data as source'),
                 ('  rebuilds byte-identical', '-', 'not recorded yet')]
     named = lambda b: bool(b.get('name')) and not AUTO.match(b['name'])
     size = lambda b: b['end'] - b['start'] + 1
     code = [b for b in rb['blocks'] if b['kind'] == 'code']
     data = [b for b in rb['blocks'] if b['kind'] == 'data']
-    code_ok = sum(size(b) for b in code if named(b) and b.get('symbolic'))
-    data_ok = sum(size(b) for b in data if named(b) and b.get('format', 'raw') != 'raw')
+    code_ok = sum(size(b) for b in code if named(b) and b.get('symbolic')
+                  and b.get('named_labels', 0) == b.get('labels', 0))
+    data_ok = sum(size(b) for b in data if named(b) and readable(b))
+    inner = sum(b.get('labels', 0) for b in code)
+    inner_named = sum(b.get('named_labels', 0) for b in code)
+    flds = sum(b.get('fields', 0) for b in code)
+    flds_named = sum(b.get('named_fields', 0) for b in code)
     done = code_ok + data_ok if rb.get('identical') else 0
     code_b, data_b = sum(size(b) for b in code), sum(size(b) for b in data)
     return [('SOURCE (%s)' % release, '', '%d blocks: %d code, %d data' % (len(rb['blocks']), len(code), len(data))),
-            ('  done: equivalent source', pct(done, rom_size), 'rebuilds byte-identical; named code with symbolic operands, named data in a decoded format'),
+            ('  done: equivalent source', pct(done, rom_size), 'rebuilds byte-identical; named code with every label and operand named; named leaf assets, structured data as source'),
             ('  rebuilds byte-identical', '-', 'yes' if rb.get('identical') else 'NO: nothing counts until it does'),
-            ('  code as source', pct(code_ok, code_b), '%d of %d code bytes: named routine, symbolic operands' % (code_ok, code_b)),
-            ('  data as source', pct(data_ok, data_b), '%d of %d data bytes: named block, decoded format' % (data_ok, data_b))]
+            ('  code as source', pct(code_ok, code_b), '%d of %d code bytes: named routine, labels and operands (addresses, struct fields) named' % (code_ok, code_b)),
+            ('  data as source', pct(data_ok, data_b), '%d of %d data bytes: named leaf asset, or written as source' % (data_ok, data_b)),
+            ('  local labels named', pct(inner_named, inner), '%d of %d labels inside routines' % (inner_named, inner)),
+            ('  struct fields named', pct(flds_named, flds), '%d of %d displacements off an address register' % (flds_named, flds)),
+            ('  named constants', '-', 'not required: an ID and a count look alike')]
 
 
 docs = ''.join(open(f, encoding='utf-8').read() for f in sorted(os.listdir('.')) if f.endswith('.md'))
