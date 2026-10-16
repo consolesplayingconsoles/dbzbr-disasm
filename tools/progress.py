@@ -128,5 +128,37 @@ rows_out = source_rows('traces/rebuild.json', ROM_SIZE, 'French ROM') + [
     ('  fighters identified', pct(len(facts.FIGHTERS), 11), '%d of 11 (roster order)' % len(facts.FIGHTERS)),
     ('  font glyphs decoded', '-', '%d' % len(text.FONT)),
 ]
+def write_badge(rows, label, path='badge.svg'):
+    """badge.svg beside the README: the label, a bar filled to the main metric ("done: ...") and its percentage, in
+    Pluto's colours. One metric only; the number is always printed, so colour carries no meaning on its own."""
+    done = 0.0
+    for n, p, _ in rows:
+        if n.strip().startswith('done:'):
+            try:
+                done = float(p.strip().rstrip('%'))
+            except ValueError:
+                done = 0.0
+            break
+    bar = 64
+    wd = int(round(bar * min(done, 100.0) / 100.0))
+    if done > 0 and wd < 2:
+        wd = 2
+    text = '%.1f%%' % done
+    title = '%s: %s done' % (label, text)
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" width="182" height="20" role="img" aria-label="%s">'
+           '<title>%s</title><clipPath id="r"><rect width="182" height="20" rx="3"/></clipPath>'
+           '<g clip-path="url(#r)"><rect width="52" height="20" fill="#1a2233"/><rect x="52" width="130" height="20" fill="#2a3347"/>'
+           '<rect x="60" y="6" width="%d" height="8" rx="2" fill="#ecc9b9"/>'
+           '<rect x="60" y="6" width="%d" height="8" rx="2" fill="#c87053"/></g>'
+           '<g fill="#fff" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11" text-anchor="middle">'
+           '<text x="26" y="14">%s</text><text x="154" y="14">%s</text></g></svg>\n'
+           % (title, title, bar, wd, label, text))
+    try:
+        open(path, 'w').write(svg)
+    except OSError:
+        pass
+
+
+write_badge(rows_out, 'disasm')
 for label, p, rest in rows_out:
     print(('%-30s %6s  %s' % (label, p, rest)).rstrip())

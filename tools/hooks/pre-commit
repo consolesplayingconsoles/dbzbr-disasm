@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Keeps the README's Progress block current: on every commit it rewrites the lines between
-# <!-- progress --> and <!-- /progress --> with tools/progress.py's report, and stages README.md.
+# <!-- progress --> and <!-- /progress --> with tools/progress.py's report, and stages README.md and badge.svg.
 # Needs a trace (build/trace.json); without one the block is left as is.
 # Enable once per clone: git config core.hooksPath tools/hooks
 set -euo pipefail
@@ -17,3 +17,4 @@ if s2 != s:
     open("README.md", "w", encoding="utf-8").write(s2)
 PY
 git add README.md
+[ -f badge.svg ] && git add badge.svg || true
