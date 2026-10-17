@@ -1,0 +1,25 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Dragon Ball Z: L'Appel du Destin",
+  "system": "Genesis",
+  "type": "decomp",
+  "original": [
+    {
+      "region": "France",
+      "sha1": "5ff71986f4911b5dfd16598a5a3a9ba398c92c60"
+    },
+    {
+      "region": "Japan",
+      "sha1": "dc6336dfbbe76c24ada735009d0d667ce27843f6"
+    }
+  ],
+  "project": "Dragon Ball Z: L'Appel du Destin disassembly",
+  "status": "in-progress",
+  "approach": "Disassembly rebuilt byte for byte from one source file per routine",
+  "maintainers": [
+    {
+      "name": "consolesplayingconsoles",
+      "link": "https://github.com/consolesplayingconsoles"
+    }
+  ]
+}
