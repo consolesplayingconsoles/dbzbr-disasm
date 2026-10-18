@@ -87,18 +87,19 @@ Outputs (all under `build/`, untracked):
 SOURCE (French ROM)                    3004 blocks: 1123 code, 1881 data
   done: equivalent source       60.9%  rebuilds byte-identical; named code with every label and operand named; named leaf assets, structured data as source
   rebuilds byte-identical           -  yes
-  code as source                 0.0%  0 of 92654 code bytes: named routine, labels and operands (addresses, struct fields) named
+  code as source                 0.0%  12 of 92654 code bytes: named routine, labels and operands (addresses, struct fields) named
   data as source                63.7%  1277582 of 2004498 data bytes: named leaf asset, or written as source
+  recognised, not counted        0.4%  8008 bytes, 1 blocks: a known format or program, content not yet identified or not yet written as source; not in the figures above
   local labels named             0.0%  0 of 2953 labels inside routines
   struct fields named            0.0%  0 of 2246 displacements off an address register
   named constants                   -  not required: an ID and a count look alike
 ROM MAP (facts.REGIONS)                28 regions: 18 high, 10 medium, 0 low confidence
-  mapped, bytes                 68.3%  high and medium confidence ranges, and the data blocks
+  mapped, bytes                 68.6%  high and medium confidence ranges, and the data blocks
 GAME CODE (French ROM, traced)         1058 subroutines, 92728 bytes of code
-  named                          1.6%  17 of 1058 subroutines (tools/facts.py NAMES)
-  unnamed                       98.4%  1041 subroutines (sub_...)
+  named                          2.1%  22 of 1058 subroutines (tools/facts.py NAMES)
+  unnamed                       97.9%  1036 subroutines (sub_...)
   documented                     0.3%  3 named subroutines in *.md
-  named globals                     -  5 of 384 RAM variables referenced
+  named globals                     -  7 of 384 RAM variables referenced
   traced code, of the ROM        4.4%  the rest is art and data
   dispatch tables                   -  51 jump, 69 pointer, 41 mode
   indirect calls unresolved         -  0

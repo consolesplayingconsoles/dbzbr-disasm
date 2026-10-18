@@ -248,6 +248,17 @@ REGIONS = [
 # Labels for the listing (tools/emit.py uses these over sub_/off_/ram_ names).
 # Each is what the code was read to do; nothing here changes a byte.
 NAMES = {
+    0x1AF210: 'LoadZ80Driver',        # holds the Z80 in reset, waits for the bus, copies 8008 bytes of Z80Driver to Z80 RAM
+    0x1ADE42: 'SoundCommand',         # d0 = sound command: $20-$56 look up a table at $1B55FA, $80+ take another path
+    0x00439C: 'SendQueuedSounds',     # sends the commands queued in $FFFF5000 and $FFFF5003 (ff = none) through SoundCommand
+    0x000200: 'HaltLoop',             # nop, nop, bra to itself: the vector for the interrupts the game never uses
+    0x000206: 'EntryPoint',           # Sega boot block: VDP, Z80, PSG and RAM set up, then on to $300
+    0x003FEA: 'VBlankInterrupt',      # saves all registers; mode-dispatches, steps sound, FrameCounter, one random step
+    0x004396: 'HBlankInterrupt',      # pops d0/a0/a6 and returns: no push in this routine
+    0x000746: 'RandomStep',           # long LCG on RandomState (seed $2A6D365A when zero); returns a word in d0
+    0x0013F8: 'RandomTableStep',      # XORs two words of a 90-byte table at $FFE55E, writes the word to RandomState
+    0xFFE660: 'RandomState',          # long: RandomStep's state; RandomTableStep leaves its word in the low half
+    0xFFE6A8: 'FrameCounter',         # word, +1 per VBlank; bit 0 picks RandomStep or RandomTableStep that frame
     0x0017AA: 'LzssToRam',            # a0 = stream, a1 = destination
     0x0015D2: 'LzssToVram',           # a0 = stream, a1 = VRAM address; the same
     0x0015F0: 'LzssToVram_Data',      #   LZSS, written through a $2000 ring buffer
@@ -523,6 +534,9 @@ BLOCKS += [
     (0x03A56B, 0x03A750, 'font_art', 'lzss'),
     (0x03D9EE, 0x03E25E, 'logo_art', 'lzss'),
 ]
+# The Z80 sound program: LoadZ80Driver (sub_1AF210) copies exactly $1F48 = 8008 bytes from $1B5AC6 to Z80 RAM,
+# and the block is 8008 bytes. Recognised (a known program, not yet written as Z80 source), not a leaf asset.
+BLOCKS += [(0x1B5AC6, 0x1B7A0D, 'Z80Driver', 'recognised_z80')]
 from picture_blocks_list import PICTURE_BLOCKS     # generated, each stream checked
 BLOCKS += PICTURE_BLOCKS
 
