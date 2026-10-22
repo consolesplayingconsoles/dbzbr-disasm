@@ -15,11 +15,18 @@
   ],
   "project": "Dragon Ball Z: L'Appel du Destin disassembly",
   "status": "in-progress",
+  "toolchain": "genesis-disasm-kickoff",
   "approach": "Disassembly rebuilt byte for byte from one source file per routine",
   "maintainers": [
     {
       "name": "consolesplayingconsoles",
       "link": "https://github.com/consolesplayingconsoles"
+    }
+  ],
+  "links": [
+    {
+      "label": "genesis-disasm-kickoff",
+      "url": "https://github.com/consolesplayingconsoles/genesis-disasm-kickoff"
     }
   ]
 }
